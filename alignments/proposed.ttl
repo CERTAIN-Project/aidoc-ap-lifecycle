@@ -1,0 +1,63 @@
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dpv: <https://w3id.org/dpv#> .
+@prefix dpv-aiact: <https://w3id.org/dpv/legal/eu/aiact#> .
+@prefix dpv-tech: <https://w3id.org/dpv/tech#> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix airo: <https://w3id.org/airo#> .
+@prefix mex-algo: <http://mex.aksw.org/mex-algo#> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# Alignment proposals for the AIDOC-AP Lifecycle Extension.
+#
+# Status: proposed, not curated. Before publication each mapping goes through the curation
+# used for the core alignments (three domain experts, 2-of-3 majority vote, joint adjudication
+# of splits). alignments/proposed-reified.ttl holds the same mappings in the record format of
+# the core alignments; regenerate it with `make alignments`.
+#
+# Format: one mapping per line, followed by its rationale as a comment. Subjects are module
+# terms; targets are terms of the AIDOC-AP core or of the vocabularies vendored with it.
+# The rdfs:subPropertyOf links of the module to prov:used, prov:generated and prov:invalidated
+# are axioms of the module and are not repeated here.
+
+# Classes
+aidoc-lc:DataAugmentation skos:broadMatch dpv:Derive .  # DPV: "to create new derivative data from the original data"; augmentation derives synthetic records from existing ones.
+aidoc-lc:Tokenization skos:broadMatch dpv:Transform .  # DPV: "to change the form or nature of data"; tokenization turns text into token sequences.
+
+# Hyperparameter settings (M1, D5)
+aidoc-lc:hasHyperParameterSetting skos:broadMatch mls:hasInput .  # mls:hasInput relates a run to any input, including hyperparameter settings; not a superproperty, because its domain mls:Run would type model engineering activities as runs.
+aidoc-lc:hasHyperParameterSetting skos:relatedMatch mls:hasHyperParameter .  # ML Schema relates an implementation to the hyperparameters it declares; a setting assigns a value to such a hyperparameter.
+aidoc-lc:hasHyperParameterSetting skos:relatedMatch mex-algo:hasHyperParameter .  # MEX relates an algorithm to its hyperparameters; same relation to settings as for ML Schema.
+
+# Outputs of model engineering and evaluation (M1, M2, D2, O2, O3)
+aidoc-lc:producesModel skos:broadMatch mls:hasOutput .  # mls:hasOutput relates a run to the model or model evaluation it produces; producesModel covers the model output only.
+aidoc-lc:producesMeasurement skos:relatedMatch mls:hasOutput .  # overlap: an mls:ModelEvaluation output is a measured value, but producesMeasurement also covers data profiling and monitoring.
+aidoc-lc:producesMeasurement skos:relatedMatch dqv:hasQualityMeasurement .  # DQV links the measured resource to its measurement; producesMeasurement links the activity that computed it, and the measured resource stays on dqv:computedOn.
+
+# Computational resources (cross-cutting)
+aidoc-lc:usesComputationalResource skos:relatedMatch airo:runsOnHardware .  # AIRO states the hardware platform of a whole AI system; usesComputationalResource the resource of one lifecycle activity.
+aidoc-lc:usesComputationalResource skos:relatedMatch dpv-tech:hasHardware .  # DPV-TECH states the hardware a technology has or uses, without reference to a lifecycle activity.
+
+# Packaging and serving (M3, S3)
+aidoc-lc:packagingFormat skos:relatedMatch dcat:packageFormat .  # DCAT: the format in which the files of a distribution are packaged, as a media type; packagingFormat: the serialisation of a model, as a concept.
+aidoc-lc:packagingFormat skos:broadMatch dcterms:format .  # dcterms:format covers any file format, medium or dimension of a resource.
+aidoc-lc:servingEndpoint skos:closeMatch dcat:endpointURL .  # both give the network address of a running service: a data service in DCAT, a deployed model or system here. DCAT uses an IRI node, the module an xsd:anyURI literal.
+
+# Changes and decommissioning (S4, O4)
+aidoc-lc:producesChangeRecord skos:relatedMatch dpv-aiact:hasChangeDescription .  # DPV links an AI system to a description of a change; producesChangeRecord links the activity that made the change to its record.
+aidoc-lc:decommissioningReason skos:relatedMatch aidoc:reasonForChange .  # core property on aidoc:ChangeRecord; taking a model out of operation is a change of the system, but the domain differs.
+
+# Data preparation techniques (D3, D5)
+aidoc-lc:processingTechnique skos:narrowMatch aidoc:outlierHandlingMethod .  # the core property names the technique for one cleaning task (outliers); processingTechnique names any wrangling or preparation technique.
+aidoc-lc:processingTechnique skos:narrowMatch aidoc:missingDataStrategy .  # as above, for missing values.
+
+# No counterpart found in the core or the vendored vocabularies (searched by local name, label and
+# definition): packagesModel, versionsModel, assignsRegistryStage, producesSoftware, testsArtifact,
+# buildStatus, testLevel, producesTestReport (its range dpv-aiact:TestReport is the link), deploys,
+# versionsSoftware, monitors, evaluates, decommissions, decommissioningAction, and the concepts of
+# the four seed schemes. The ISO/IEC 22989 stage concepts of DPV-AI (for example
+# dpv-ai:ReevaluationStage, dpv-ai:DecommissionStage) match core stage classes; such mappings have a
+# core term as subject and belong to the core alignment process, not to this file.

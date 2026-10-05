@@ -2,7 +2,7 @@
 PY ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 MODULE := ontology/aidoc-lc.ttl
 
-.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged all release-check fetch-core fetch-engine fetch-engine-excerpt
+.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments all release-check fetch-core fetch-engine fetch-engine-excerpt
 
 setup:
 	python3 -m venv .venv
@@ -38,6 +38,9 @@ gap:
 
 test:
 	$(PY) -m pytest -q tests
+
+alignments:
+	$(PY) scripts/alignments.py
 
 lint-text:
 	$(PY) scripts/style.py $(wildcard docs/*.md deliverable/*.md)

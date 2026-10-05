@@ -22,7 +22,7 @@ jobs:
         run: bash scripts/fetch_core.sh
 
       - name: Module rules, tooling tests, OCI, competency queries
-        run: make PY=python check test oci-core oci cq
+        run: make PY=python check test oci-core oci cq alignments
 
       - name: Upload reports
         if: always()
