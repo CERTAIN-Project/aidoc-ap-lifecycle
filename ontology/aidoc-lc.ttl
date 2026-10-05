@@ -63,6 +63,14 @@
     rdfs:comment "Relates a model versioning activity to the stage it assigns to the model version in a model registry, such as staging, production or archived. Values are concepts, for example from the scheme aidoc-lc:RegistryStages."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
 
+###  https://w3id.org/aidoc-ap/lifecycle#buildStatus
+:buildStatus rdf:type owl:ObjectProperty ;
+    rdfs:domain aidoc:BuildAndIntegrationTesting ;
+    rdfs:range skos:Concept ;
+    rdfs:label "build status"@en ;
+    rdfs:comment "Relates a build and integration testing activity to the outcome of its build, such as succeeded or failed. Values are concepts, for example from the scheme aidoc-lc:BuildStatuses."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#evaluates
 :evaluates rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:used ;
@@ -134,6 +142,35 @@
     rdfs:comment "Relates a software development activity to the software implementation or software component that it writes or changes."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source "EU AI Act 2024/1689, Annex IV(2)(a)" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#producesTestReport
+:producesTestReport rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:generated ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:BuildAndIntegrationTesting aidoc:ModelEvaluation ) ] ;
+    rdfs:range dpv-aiact:TestReport ;
+    rdfs:label "produces test report"@en ;
+    rdfs:comment "Relates a testing or evaluation activity to the test report that summarises the tests it ran and their results."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(2)(g)" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#testLevel
+:testLevel rdf:type owl:ObjectProperty ;
+    rdfs:domain aidoc:BuildAndIntegrationTesting ;
+    rdfs:range skos:Concept ;
+    rdfs:label "test level"@en ;
+    rdfs:comment "Relates a build and integration testing activity to the level of the tests it runs, such as component, integration, system or acceptance testing. Values are concepts, for example from the scheme aidoc-lc:TestLevels."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC/IEEE 29119-1, test levels" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#testsArtifact
+:testsArtifact rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:BuildAndIntegrationTesting ;
+    rdfs:range aidoc:AIArtifact ;
+    rdfs:label "tests artifact"@en ;
+    rdfs:comment "Relates a build and integration testing activity to the artefact it builds and tests, such as a packaged model or a software component."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
 
 ###  https://w3id.org/aidoc-ap/lifecycle#usesComputationalResource
 :usesComputationalResource rdf:type owl:ObjectProperty ;
@@ -257,3 +294,75 @@
     skos:definition "The registry stage of a model version that is kept for reference but no longer served."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source <https://mlflow.org/docs/latest/model-registry.html> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#BuildStatuses
+:BuildStatuses rdf:type skos:ConceptScheme ;
+    skos:prefLabel "Build statuses"@en ;
+    skos:definition "Seed list of outcomes of a build, after the conclusion values of common continuous integration services. Values from other schemes may be used with aidoc-lc:buildStatus."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#BuildSucceeded
+:BuildSucceeded rdf:type skos:Concept ;
+    skos:inScheme :BuildStatuses ;
+    skos:topConceptOf :BuildStatuses ;
+    skos:prefLabel "Succeeded"@en ;
+    skos:definition "The build completed and produced its artefacts."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#BuildFailed
+:BuildFailed rdf:type skos:Concept ;
+    skos:inScheme :BuildStatuses ;
+    skos:topConceptOf :BuildStatuses ;
+    skos:prefLabel "Failed"@en ;
+    skos:definition "The build stopped with an error and produced no usable artefact."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#BuildCancelled
+:BuildCancelled rdf:type skos:Concept ;
+    skos:inScheme :BuildStatuses ;
+    skos:topConceptOf :BuildStatuses ;
+    skos:prefLabel "Cancelled"@en ;
+    skos:definition "The build was stopped before it completed."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#TestLevels
+:TestLevels rdf:type skos:ConceptScheme ;
+    skos:prefLabel "Test levels"@en ;
+    skos:definition "Seed list of test levels after ISO/IEC/IEEE 29119-1. Values from other schemes may be used with aidoc-lc:testLevel."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#ComponentTestLevel
+:ComponentTestLevel rdf:type skos:Concept ;
+    skos:inScheme :TestLevels ;
+    skos:topConceptOf :TestLevels ;
+    skos:prefLabel "Component testing"@en ;
+    skos:definition "Testing of a single software component or unit in isolation."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC/IEEE 29119-1, test levels" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#IntegrationTestLevel
+:IntegrationTestLevel rdf:type skos:Concept ;
+    skos:inScheme :TestLevels ;
+    skos:topConceptOf :TestLevels ;
+    skos:prefLabel "Integration testing"@en ;
+    skos:definition "Testing of the interfaces and interactions between integrated components, for example between a packaged model and its serving layer."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC/IEEE 29119-1, test levels" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#SystemTestLevel
+:SystemTestLevel rdf:type skos:Concept ;
+    skos:inScheme :TestLevels ;
+    skos:topConceptOf :TestLevels ;
+    skos:prefLabel "System testing"@en ;
+    skos:definition "Testing of the complete, integrated AI system against its requirements."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC/IEEE 29119-1, test levels" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#AcceptanceTestLevel
+:AcceptanceTestLevel rdf:type skos:Concept ;
+    skos:inScheme :TestLevels ;
+    skos:topConceptOf :TestLevels ;
+    skos:prefLabel "Acceptance testing"@en ;
+    skos:definition "Testing that decides whether the AI system meets the needs of its users or deployers before it is put into service."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC/IEEE 29119-1, test levels" .

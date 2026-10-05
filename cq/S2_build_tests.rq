@@ -1,0 +1,18 @@
+# CQ: Did the build and integration tests of the packaged model pass, at which test level, and where is the test report?
+# Stage: S2
+# Terms: aidoc-lc:testsArtifact, aidoc-lc:buildStatus, aidoc-lc:testLevel, aidoc-lc:producesTestReport
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?artifact ?testing ?status ?level ?report ?time WHERE {
+  ?testing a aidoc:BuildAndIntegrationTesting ;
+           aidoc-lc:testsArtifact ?artifact .
+  OPTIONAL { ?testing aidoc-lc:buildStatus/skos:prefLabel ?status }
+  OPTIONAL { ?testing aidoc-lc:testLevel/skos:prefLabel ?level }
+  OPTIONAL { ?testing aidoc-lc:producesTestReport ?report }
+  OPTIONAL { ?testing prov:endedAtTime ?time }
+}
+ORDER BY ?artifact ?time
