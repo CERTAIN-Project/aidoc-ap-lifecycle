@@ -1,0 +1,23 @@
+/* Stylesheet of the extra documentation pages (worked examples, coverage). */
+:root { --fg: #1d2733; --muted: #5b6b7c; --line: #dde3ea; --accent: #0b5cad; --soft: #f4f7fa; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--fg); background: #fff; }
+header, footer { padding: .8rem 1.5rem; background: var(--soft); border-bottom: 1px solid var(--line); font-size: .92rem; }
+footer { border-top: 1px solid var(--line); border-bottom: 0; color: var(--muted); margin-top: 3rem; }
+header a { color: var(--accent); text-decoration: none; margin-right: .3rem; }
+main { max-width: 72rem; margin: 0 auto; padding: 1rem 1.5rem; }
+h1 { font-size: 1.7rem; margin: 1.2rem 0 .4rem; }
+h2 { font-size: 1.3rem; margin: 2.4rem 0 .4rem; padding-top: .6rem; border-top: 1px solid var(--line); }
+h3 { font-size: 1.05rem; margin: 1.4rem 0 .3rem; }
+.lead { color: var(--muted); max-width: 70ch; }
+.hint, .terms { color: var(--muted); font-size: .92rem; margin: .2rem 0 .6rem; }
+.kpi { font-size: 1.1rem; }
+.toc a { display: inline-block; margin: 0 .4rem .4rem 0; padding: .1rem .5rem; border: 1px solid var(--line); border-radius: 4px; color: var(--accent); text-decoration: none; font-size: .9rem; }
+table { border-collapse: collapse; margin: .6rem 0 1rem; font-size: .9rem; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--line); padding: .3rem .55rem; text-align: left; vertical-align: top; }
+th { background: var(--soft); }
+code, pre { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: .85rem; }
+pre { background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: .7rem; overflow-x: auto; }
+details { margin: .3rem 0 .8rem; }
+summary { cursor: pointer; color: var(--accent); font-size: .92rem; }
+article { margin-bottom: 1.6rem; }

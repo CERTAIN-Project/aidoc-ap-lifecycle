@@ -26,16 +26,23 @@
 
 <https://w3id.org/aidoc-ap/lifecycle#> rdf:type owl:Ontology ;
     owl:imports <https://w3id.org/aidoc-ap/1.2> ;
-    owl:versionIRI <https://w3id.org/aidoc-ap/lifecycle/0.1> ;
-    owl:versionInfo "0.1" ;
+    owl:versionIRI <https://w3id.org/aidoc-ap/lifecycle/0.2> ;
+    owl:versionInfo "0.2" ;
     dcterms:title "AIDOC-AP Lifecycle Extension"@en ;
     rdfs:label "AIDOC-AP Lifecycle Extension"@en ;
     dcterms:description "Extension module of the AIDOC-AP application profile. It adds the terms needed to describe the stages of the AI system lifecycle that the AIDOC-AP core, which is restricted to the documentation duties of Annex IV of the EU AI Act, does not cover in detail: links from lifecycle activities to the artefacts they use and produce, and stage-specific descriptions. The module imports the core and does not change any core definition."@en ;
     dcterms:creator [ rdf:type foaf:Person ;
                       foaf:name "Sebastian Neumaier" ;
                       foaf:mbox <mailto:sebastian.neumaier@ustp.at> ;
+                      foaf:organization "University of Applied Sciences St. Pölten" ] ,
+                    [ rdf:type foaf:Person ;
+                      foaf:name "Tobias Dam" ;
+                      foaf:organization "University of Applied Sciences St. Pölten" ] ,
+                    [ rdf:type foaf:Person ;
+                      foaf:name "Fabian Kovac" ;
                       foaf:organization "University of Applied Sciences St. Pölten" ] ;
-    # dcterms:contributor: add the contributors according to their roles before the first release
+    dcterms:created "2026-10-02"^^xsd:date ;
+    dcterms:modified "2026-10-05"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     dcterms:publisher [ foaf:name "CERTAIN Project" ;
                         foaf:homepage <https://certain-project.eu> ] ;

@@ -31,6 +31,31 @@ jobs:
           name: reports
           path: reports/
 
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tooling, fetch the pinned core and the engine excerpt (public repository)
+        run: |
+          pip install -r requirements.txt
+          bash scripts/fetch_core.sh
+          ENGINE_EXCERPT=1 bash scripts/fetch_engine.sh
+
+      - name: Adapter over the engine's RDF output, R2RML overlay checks
+        run: make PY=python adapter-check overlay-check
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-reports
+          path: reports/
+
   reasoner:
     runs-on: ubuntu-latest
     steps:

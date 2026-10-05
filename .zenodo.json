@@ -1,0 +1,48 @@
+{
+  "title": "AIDOC-AP Lifecycle Extension",
+  "upload_type": "dataset",
+  "version": "0.2",
+  "description": "<p>Extension module of the AIDOC-AP application profile. It adds the terms needed to describe the stages of the AI system lifecycle that the AIDOC-AP core, which follows the technical documentation of Annex IV of the EU AI Act, does not cover in detail: links from lifecycle activities to the artefacts they use and produce (models, packages, code, measurements, change records) and stage-specific descriptions such as hyperparameter settings, packaging formats, registry stages, test levels, serving endpoints and decommissioning reasons. The module imports the core without changing it and reuses PROV-O, ML Schema, DQV and DPV.</p><p>Developed in the CERTAIN project (Horizon Europe, grant agreement 101189650).</p>",
+  "creators": [
+    {
+      "name": "Neumaier, Sebastian",
+      "affiliation": "University of Applied Sciences St. Pölten"
+    },
+    {
+      "name": "Dam, Tobias",
+      "affiliation": "University of Applied Sciences St. Pölten"
+    },
+    {
+      "name": "Kovac, Fabian",
+      "affiliation": "University of Applied Sciences St. Pölten"
+    }
+  ],
+  "license": "cc-by-4.0",
+  "language": "eng",
+  "keywords": [
+    "ontology",
+    "AI lifecycle",
+    "MLOps",
+    "provenance",
+    "EU AI Act",
+    "AIDOC-AP"
+  ],
+  "grants": [
+    {
+      "id": "10.13039/501100000780::101189650"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.17787786",
+      "relation": "requires",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://w3id.org/aidoc-ap/lifecycle",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ]
+}

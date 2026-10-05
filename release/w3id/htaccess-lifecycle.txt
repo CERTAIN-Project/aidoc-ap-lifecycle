@@ -1,0 +1,33 @@
+# Rules for https://w3id.org/aidoc-ap/lifecycle (AIDOC-AP Lifecycle Extension).
+# To be inserted into aidoc-ap/.htaccess of https://github.com/perma-id/w3id.org, ABOVE the existing
+# rules that forward every path to https://certain-project.github.io/aidoc-ap/. The module is
+# documented in its own repository (CERTAIN-Project/aidoc-ap-lifecycle), so its paths go there.
+# Redirect code 302 as for the core.
+
+RewriteEngine on
+
+# Namespace and ontology IRI https://w3id.org/aidoc-ap/lifecycle# (the fragment is not sent):
+# RDF by content negotiation, HTML documentation otherwise.
+RewriteCond %{HTTP_ACCEPT} text/turtle [OR]
+RewriteCond %{HTTP_ACCEPT} application/x-turtle
+RewriteRule ^lifecycle/?$ https://certain-project.github.io/aidoc-ap-lifecycle/aidoc-lc.ttl [R=302,L]
+
+RewriteCond %{HTTP_ACCEPT} application/rdf\+xml
+RewriteRule ^lifecycle/?$ https://certain-project.github.io/aidoc-ap-lifecycle/ontology.owl [R=302,L]
+
+RewriteCond %{HTTP_ACCEPT} application/ld\+json
+RewriteRule ^lifecycle/?$ https://certain-project.github.io/aidoc-ap-lifecycle/ontology.jsonld [R=302,L]
+
+RewriteCond %{HTTP_ACCEPT} application/n-triples
+RewriteRule ^lifecycle/?$ https://certain-project.github.io/aidoc-ap-lifecycle/ontology.nt [R=302,L]
+
+RewriteRule ^lifecycle/?$ https://certain-project.github.io/aidoc-ap-lifecycle/ [R=302,L]
+
+# Version IRIs https://w3id.org/aidoc-ap/lifecycle/<x.y>: release snapshots (versions/<x.y>/).
+RewriteRule ^lifecycle/([0-9]+\.[0-9]+)/?$ https://certain-project.github.io/aidoc-ap-lifecycle/$1/aidoc-lc.ttl [R=302,L]
+
+# Instances of the example graphs: the worked examples page.
+RewriteRule ^lifecycle/example/.*$ https://certain-project.github.io/aidoc-ap-lifecycle/examples.html [R=302,L]
+
+# Any other path below lifecycle/: the documentation site.
+RewriteRule ^lifecycle/(.+)$ https://certain-project.github.io/aidoc-ap-lifecycle/$1 [R=302,L]

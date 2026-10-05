@@ -1,0 +1,38 @@
+<h2 id="intro" class="list">Introduction <span class="backlink"> back to <a href="#toc">ToC</a></span></h2>
+<span>
+    The AIDOC-AP Lifecycle Extension adds to the <a href="https://w3id.org/aidoc-ap">AIDOC-AP</a> core what is needed to follow an AI system through its lifecycle: which activity produced, packaged, tested, deployed, monitored or retired which model, and with which settings, formats, results and reasons.
+    The core describes the technical documentation required by Annex IV of the EU AI Act and already has an activity class for each lifecycle stage. The extension connects these activities to the artefacts they use and produce, and gives each stage the descriptive properties that the CERTAIN Semantic MLOps Engine records.
+    It imports the core without changing any of its definitions, and it reuses PROV-O, ML Schema, DQV and DPV wherever a term exists.
+</span>
+
+<h3 id="by-stage" class="list">Terms by lifecycle stage</h3>
+<span>
+<table>
+<tr><th>Stage</th><th>Core activity class</th><th>Extension terms</th></tr>
+<tr><td>Exploration and validation</td><td>aidoc:ExplorationAndValidation</td><td>producesMeasurement</td></tr>
+<tr><td>Data preparation</td><td>aidoc:DataProcessing</td><td>DataAugmentation, Tokenization, processingTechnique, hasHyperParameterSetting, producesMeasurement</td></tr>
+<tr><td>Model training and engineering</td><td>aidoc:ModelEngineering</td><td>producesModel, hasHyperParameterSetting</td></tr>
+<tr><td>Model evaluation</td><td>aidoc:ModelEvaluation</td><td>evaluates, producesMeasurement, producesTestReport</td></tr>
+<tr><td>Model packaging</td><td>aidoc:ModelPackaging</td><td>packagesModel, packagingFormat</td></tr>
+<tr><td>Model versioning</td><td>aidoc:ModelVersioning</td><td>versionsModel, assignsRegistryStage</td></tr>
+<tr><td>Software development</td><td>aidoc:SoftwareDevelopment</td><td>producesSoftware</td></tr>
+<tr><td>Build and integration testing</td><td>aidoc:BuildAndIntegrationTesting</td><td>testsArtifact, buildStatus, testLevel, producesTestReport</td></tr>
+<tr><td>Deployment and model serving</td><td>aidoc:Deployment</td><td>deploys, servingEndpoint</td></tr>
+<tr><td>Software versioning and change management</td><td>aidoc:SoftwareVersioning</td><td>versionsSoftware</td></tr>
+<tr><td>Post-market monitoring</td><td>aidoc:PostMarketMonitoringActivity</td><td>monitors, producesMeasurement</td></tr>
+<tr><td>Re-evaluation</td><td>aidoc:PostMarketPerformanceEvaluationActivity</td><td>evaluates, producesMeasurement</td></tr>
+<tr><td>Retirement and decommissioning</td><td>aidoc:Decommissioning</td><td>decommissions, decommissioningReason, decommissioningAction</td></tr>
+<tr><td>Any lifecycle activity</td><td>aidoc:AIActivity</td><td>usesComputationalResource, producesChangeRecord</td></tr>
+</table>
+Categorical values (packaging formats, registry stages, build statuses, test levels) are SKOS concepts; the extension ships small seed schemes, and concepts from other schemes may be used.
+</span>
+
+<h3 id="additional-resources" class="list">Additional resources</h3>
+<span>
+<ul>
+<li><a href="examples.html">Worked examples</a>: every stage shown on the lifecycle of an energy load forecasting model, with competency questions, SPARQL queries, answers and example data.</li>
+<li><a href="coverage.html">Lifecycle coverage</a>: the Ontology Coverage Index (CERTAIN KPI 1.1) of the core and of core plus extension, per stage.</li>
+<li><a href="https://github.com/CERTAIN-Project/aidoc-ap-lifecycle/tree/main/mappings">Use with the Semantic MLOps Engine</a>: an adapter that lifts the engine's RDF output to the extension, and an R2RML overlay for a separate Ontop endpoint over the engine database.</li>
+<li><a href="https://github.com/CERTAIN-Project/aidoc-ap-lifecycle">Source repository</a>: ontology, competency queries, examples, checks.</li>
+</ul>
+</span>

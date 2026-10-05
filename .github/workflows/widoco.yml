@@ -1,0 +1,99 @@
+name: Build & deploy documentation (Widoco)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ontology/**"
+      - "documentation/**"
+      - "examples/**"
+      - "cq/**"
+      - "scripts/build_docs_pages.py"
+      - "versions/**"
+      - ".github/workflows/widoco.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  WIDOCO_VERSION: "1.4.25"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tooling and fetch the pinned core
+        run: |
+          pip install -r requirements.txt
+          bash scripts/fetch_core.sh
+
+      - name: Coverage index and extra pages (worked examples, coverage)
+        run: |
+          make PY=python oci-core oci
+          python scripts/build_docs_pages.py --out site-extra
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Widoco
+        id: cache-widoco
+        uses: actions/cache@v4
+        with:
+          path: widoco.jar
+          key: widoco-${{ env.WIDOCO_VERSION }}
+
+      - name: Download Widoco
+        if: steps.cache-widoco.outputs.cache-hit != 'true'
+        run: >
+          wget -q -O widoco.jar
+          "https://github.com/dgarijo/Widoco/releases/download/v${WIDOCO_VERSION}/widoco-${WIDOCO_VERSION}-jar-with-dependencies_JDK-17.jar"
+
+      - name: Generate the term reference
+        run: >
+          java -Xmx1G -jar widoco.jar
+          -ontFile ontology/aidoc-lc.ttl
+          -outFolder site
+          -confFile documentation/config.properties
+          -includeAnnotationProperties
+          -rewriteAll
+          -webVowl
+          -excludeProvenance
+          -noPlaceHolderText
+          -uniteSections
+
+      - name: Assemble the site
+        run: |
+          [ -f site/index-en.html ] && cp site/index-en.html site/index.html
+          cp -R site-extra/. site/
+          cp ontology/aidoc-lc.ttl site/aidoc-lc.ttl
+          # release snapshots (written by `make release`), served under the version IRIs
+          if [ -d versions ]; then cp -R versions/. site/; fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

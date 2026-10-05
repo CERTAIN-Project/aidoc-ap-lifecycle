@@ -1,0 +1,65 @@
+name: OOPS! pitfall scan
+
+# Same procedure as the core repository. Manual only: the scan sends the ontology to two external
+# services (EasyRDF for the conversion to RDF/XML, OOPS! for the scan); run it once the repository
+# is public.
+on:
+  workflow_dispatch:
+
+jobs:
+  validate-ttl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up dependencies
+        run: sudo apt-get update && sudo apt-get install -y curl jq
+
+      - name: Convert TTL to RDF/XML
+        run: |
+          curl 'https://www.easyrdf.org/converter' \
+            -X POST \
+            --data-urlencode "data=$(cat ontology/aidoc-lc.ttl)" \
+            --data-urlencode "uri=http://njh.me/" \
+            --data-urlencode "out=rdfxml" \
+            --data-urlencode "raw=1" \
+            --data-urlencode "in=guess" \
+            -o converted.rdf
+          if [ ! -s converted.rdf ]; then
+            echo "RDF conversion failed (empty result)"
+            exit 1
+          fi
+
+      - name: Build OOPS request XML
+        run: |
+          cat > request.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <OOPSRequest>
+            <OntologyUrl></OntologyUrl>
+            <OntologyContent><![CDATA[
+          $(cat converted.rdf)
+            ]]></OntologyContent>
+            <Pitfalls></Pitfalls>
+            <OutputFormat>RDF/XML</OutputFormat>
+          </OOPSRequest>
+          EOF
+
+      - name: Scan with OOPS!
+        run: |
+          curl -s -X POST https://oops.linkeddata.es/rest \
+            -H "Content-Type: application/xml" \
+            -d @request.xml \
+            -o lint_result.xml
+          if grep -q "<error>" lint_result.xml; then
+            echo "OOPS! reported errors:"
+            grep "<error>" lint_result.xml || true
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oops-results
+          path: |
+            converted.rdf
+            lint_result.xml

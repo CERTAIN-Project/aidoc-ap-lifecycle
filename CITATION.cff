@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use the AIDOC-AP Lifecycle Extension, please cite it as below."
+type: dataset
+title: "AIDOC-AP Lifecycle Extension"
+version: "0.2"
+abstract: >-
+  Extension module of the AIDOC-AP application profile. It adds the terms needed to describe the
+  stages of the AI system lifecycle that the AIDOC-AP core, which follows the technical
+  documentation of Annex IV of the EU AI Act, does not cover in detail: links from lifecycle
+  activities to the artefacts they use and produce, and stage-specific descriptions. The module
+  imports the core without changing it.
+authors:
+  - family-names: Neumaier
+    given-names: Sebastian
+    affiliation: "University of Applied Sciences St. Pölten"
+  - family-names: Dam
+    given-names: Tobias
+    affiliation: "University of Applied Sciences St. Pölten"
+  - family-names: Kovac
+    given-names: Fabian
+    affiliation: "University of Applied Sciences St. Pölten"
+license:
+  - CC-BY-4.0
+  - Apache-2.0
+repository-code: "https://github.com/CERTAIN-Project/aidoc-ap-lifecycle"
+url: "https://w3id.org/aidoc-ap/lifecycle"
+keywords:
+  - ontology
+  - AI lifecycle
+  - MLOps
+  - provenance
+  - EU AI Act
+  - AIDOC-AP
+references:
+  - type: dataset
+    title: "AIDOC-AP: AI Documentation Application Profile"
+    version: "1.2"
+    doi: "10.5281/zenodo.17787786"
+    url: "https://w3id.org/aidoc-ap"
+    authors:
+      - family-names: Neumaier
+        given-names: Sebastian
+      - family-names: Dam
+        given-names: Tobias
+      - family-names: Kovac
+        given-names: Fabian

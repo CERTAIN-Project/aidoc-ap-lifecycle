@@ -2,7 +2,7 @@
 PY ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 MODULE := ontology/aidoc-lc.ttl
 
-.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments overlay-check overlay-build adapter-check all release-check fetch-core fetch-engine fetch-engine-excerpt
+.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments overlay-check overlay-build adapter-check docs-pages set-version release all release-check fetch-core fetch-engine fetch-engine-excerpt
 
 setup:
 	python3 -m venv .venv
@@ -55,6 +55,18 @@ overlay-build: overlay-check merged
 adapter-check: | reports
 	$(PY) scripts/adapt_engine_graph.py --input vendor/engine/ontop/input/knowledge_graph.rdf mappings/adapter/engine_output_sample.ttl
 	$(PY) scripts/run_cqs.py --data reports/engine_lifted.ttl --md reports/cq_engine.md
+
+docs-pages: oci-core oci
+	$(PY) scripts/build_docs_pages.py --out reports/site-extra
+
+set-version:
+	@test -n "$(VERSION)" || (echo "usage: make set-version VERSION=0.3" && exit 1)
+	$(PY) scripts/set_version.py --version $(VERSION)
+
+release: release-check
+	@test -n "$(VERSION)" || (echo "usage: make release VERSION=1.0" && exit 1)
+	$(PY) scripts/set_version.py --version $(VERSION) --release
+	@echo "Release files updated. Review the diff, commit, tag v$(VERSION); publishing steps: RELEASE.md"
 
 lint-text:
 	$(PY) scripts/style.py $(wildcard docs/*.md deliverable/*.md)
