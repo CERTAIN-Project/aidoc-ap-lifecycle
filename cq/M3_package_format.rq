@@ -1,0 +1,16 @@
+# CQ: In which format was model M packaged for deployment, and which software does it depend on?
+# Stage: M3
+# Terms: aidoc-lc:packagesModel, aidoc-lc:packagingFormat
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?model ?packaging ?format ?dependency WHERE {
+  ?packaging a aidoc:ModelPackaging ;
+             aidoc-lc:packagesModel ?model .
+  OPTIONAL { ?packaging aidoc-lc:packagingFormat/skos:prefLabel ?format }
+  OPTIONAL { ?model aidoc:dependsOn/rdfs:label ?dependency }
+}
+ORDER BY ?model ?dependency

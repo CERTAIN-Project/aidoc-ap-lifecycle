@@ -77,6 +77,23 @@
     dcterms:source "EU AI Act 2024/1689, Annex IV(2)(b)" ;
     skos:example "The experiment that trained an XGBoost load forecaster has the settings learning_rate = 0.05 and max_depth = 6."@en .
 
+###  https://w3id.org/aidoc-ap/lifecycle#packagesModel
+:packagesModel rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:ModelPackaging ;
+    rdfs:range aidoc:AIModel ;
+    rdfs:label "packages model"@en ;
+    rdfs:comment "Relates a model packaging activity to the trained AI model that it prepares for deployment."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#packagingFormat
+:packagingFormat rdf:type owl:ObjectProperty ;
+    rdfs:domain aidoc:ModelPackaging ;
+    rdfs:range skos:Concept ;
+    rdfs:label "packaging format"@en ;
+    rdfs:comment "Relates a model packaging activity to the format in which it stores the model for deployment, such as an MLflow model, ONNX or a container image. Values are concepts, for example from the scheme aidoc-lc:PackagingFormats."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#producesMeasurement
 :producesMeasurement rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:generated ;
@@ -112,3 +129,68 @@
 #################################################################
 #    Datatype properties
 #################################################################
+
+
+#################################################################
+#    Individuals (concept schemes for categorical values)
+#################################################################
+
+###  https://w3id.org/aidoc-ap/lifecycle#PackagingFormats
+:PackagingFormats rdf:type skos:ConceptScheme ;
+    skos:prefLabel "Packaging formats"@en ;
+    skos:definition "Seed list of formats in which a trained model is stored for deployment. Values from other schemes may be used with aidoc-lc:packagingFormat."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#ContainerImageFormat
+:ContainerImageFormat rdf:type skos:Concept ;
+    skos:inScheme :PackagingFormats ;
+    skos:topConceptOf :PackagingFormats ;
+    skos:prefLabel "Container image"@en ;
+    skos:definition "A container image that bundles the model with its runtime and dependencies, following the Open Container Initiative image specification."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://github.com/opencontainers/image-spec> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#MLflowModelFormat
+:MLflowModelFormat rdf:type skos:Concept ;
+    skos:inScheme :PackagingFormats ;
+    skos:topConceptOf :PackagingFormats ;
+    skos:prefLabel "MLflow Model"@en ;
+    skos:definition "The MLflow directory format that stores a model together with its flavours, environment specification and signature."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://mlflow.org/docs/latest/models.html> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#ONNXFormat
+:ONNXFormat rdf:type skos:Concept ;
+    skos:inScheme :PackagingFormats ;
+    skos:topConceptOf :PackagingFormats ;
+    skos:prefLabel "ONNX"@en ;
+    skos:definition "The Open Neural Network Exchange format, which represents a model as a computation graph of standard operators."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://onnx.ai/> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#PickleFormat
+:PickleFormat rdf:type skos:Concept ;
+    skos:inScheme :PackagingFormats ;
+    skos:topConceptOf :PackagingFormats ;
+    skos:prefLabel "Pickle or joblib file"@en ;
+    skos:definition "A Python object serialisation of a model, as written by pickle or joblib."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://docs.python.org/3/library/pickle.html> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#SavedModelFormat
+:SavedModelFormat rdf:type skos:Concept ;
+    skos:inScheme :PackagingFormats ;
+    skos:topConceptOf :PackagingFormats ;
+    skos:prefLabel "TensorFlow SavedModel"@en ;
+    skos:definition "The TensorFlow format that stores the graph, weights and signatures of a model."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://www.tensorflow.org/guide/saved_model> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#TorchScriptFormat
+:TorchScriptFormat rdf:type skos:Concept ;
+    skos:inScheme :PackagingFormats ;
+    skos:topConceptOf :PackagingFormats ;
+    skos:prefLabel "TorchScript"@en ;
+    skos:definition "A serialised PyTorch program that can be loaded and run without a Python interpreter."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://pytorch.org/docs/stable/jit.html> .
