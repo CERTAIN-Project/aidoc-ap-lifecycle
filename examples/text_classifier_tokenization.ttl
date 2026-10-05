@@ -1,0 +1,68 @@
+@prefix : <https://w3id.org/aidoc-ap/lifecycle/example/> .
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Example: tokenization of the training split of a text classifier.
+#
+# The fields follow the tokenizer logging of the Semantic MLOps Engine
+# (certain_library/data_analysis/log_tokenizer.py, tables tokenizer_config and
+# tokenization_stats, commit b41ea27). The engine tests log no tokenizer values, so all values
+# here are illustrative. Tokenizer settings are hyperparameter settings (ML Schema); the
+# statistics per split are quality measurements (DQV).
+
+:support-tickets-train a aidoc:Dataset ;
+    rdfs:label "Support tickets, training split (illustrative)" ;
+    aidoc:dataScope "train" .
+
+:support-tickets-train-tokenized a aidoc:Dataset ;
+    rdfs:label "Support tickets, training split, tokenized (illustrative)" ;
+    prov:wasDerivedFrom :support-tickets-train .
+
+:tokenization-train a aidoc-lc:Tokenization ;
+    rdfs:label "WordPiece tokenization of the training split (illustrative)" ;
+    prov:used :support-tickets-train ;
+    aidoc:producesDataset :support-tickets-train-tokenized ;
+    aidoc-lc:processingTechnique "WordPiece tokenization with BertTokenizerFast" ;
+    aidoc-lc:hasHyperParameterSetting :tok-type , :tok-model , :tok-vocab-size , :tok-max-length , :tok-padding , :tok-truncation ;
+    aidoc-lc:producesMeasurement :tok-sequences , :tok-avg-length , :tok-truncation-rate , :tok-oov-rate .
+
+# Tokenizer configuration (table tokenizer_config)
+
+:tok-type a mls:HyperParameterSetting ; mls:specifiedBy :hp-tokenizer-type ; mls:hasValue "BertTokenizerFast" .
+:tok-model a mls:HyperParameterSetting ; mls:specifiedBy :hp-model-name ; mls:hasValue "bert-base-uncased" .
+:tok-vocab-size a mls:HyperParameterSetting ; mls:specifiedBy :hp-vocab-size ; mls:hasValue "30522"^^xsd:integer .
+:tok-max-length a mls:HyperParameterSetting ; mls:specifiedBy :hp-max-length ; mls:hasValue "128"^^xsd:integer .
+:tok-padding a mls:HyperParameterSetting ; mls:specifiedBy :hp-padding ; mls:hasValue "max_length" .
+:tok-truncation a mls:HyperParameterSetting ; mls:specifiedBy :hp-truncation ; mls:hasValue "true"^^xsd:boolean .
+
+:hp-tokenizer-type a mls:HyperParameter ; rdfs:label "tokenizer_type" .
+:hp-model-name a mls:HyperParameter ; rdfs:label "model_name_or_path" .
+:hp-vocab-size a mls:HyperParameter ; rdfs:label "vocab_size" .
+:hp-max-length a mls:HyperParameter ; rdfs:label "max_length" .
+:hp-padding a mls:HyperParameter ; rdfs:label "padding" .
+:hp-truncation a mls:HyperParameter ; rdfs:label "truncation" .
+
+# Tokenization statistics for the training split (table tokenization_stats)
+
+:tok-sequences a dqv:QualityMeasurement ;
+    dqv:computedOn :support-tickets-train-tokenized ;
+    dqv:isMeasurementOf :metric-total-sequences ; dqv:value "48210"^^xsd:integer .
+:tok-avg-length a dqv:QualityMeasurement ;
+    dqv:computedOn :support-tickets-train-tokenized ;
+    dqv:isMeasurementOf :metric-avg-token-length ; dqv:value "61.4"^^xsd:double .
+:tok-truncation-rate a dqv:QualityMeasurement ;
+    dqv:computedOn :support-tickets-train-tokenized ;
+    dqv:isMeasurementOf :metric-truncation-rate ; dqv:value "0.043"^^xsd:double .
+:tok-oov-rate a dqv:QualityMeasurement ;
+    dqv:computedOn :support-tickets-train-tokenized ;
+    dqv:isMeasurementOf :metric-oov-rate ; dqv:value "0.012"^^xsd:double .
+
+:metric-total-sequences a dqv:Metric ; rdfs:label "total_sequences" .
+:metric-avg-token-length a dqv:Metric ; rdfs:label "avg_token_length" .
+:metric-truncation-rate a dqv:Metric ; rdfs:label "truncation_rate" .
+:metric-oov-rate a dqv:Metric ; rdfs:label "oov_rate" .

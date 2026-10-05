@@ -1,0 +1,397 @@
+@prefix : <https://w3id.org/aidoc-ap/lifecycle/example/> .
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dpv-aiact: <https://w3id.org/dpv/legal/eu/aiact#> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Example: lifecycle of an energy load forecasting model, from data ingestion to decommissioning.
+#
+# The scenario follows the energy pilot of the Semantic MLOps Engine (commit b41ea27):
+# training values come from the materialised pilot graph (ontop/input/knowledge_graph.rdf,
+# MLflow run 45d3462b5b7c469baec707a9907f56f1), packaging, build testing, deployment and
+# decommissioning values from test_docker/test_full_lifecycle_pilot.py. Values marked
+# "illustrative" (drift, re-evaluation, retraining, serving endpoint) are not recorded by the
+# engine and were added to show the operation stages. The data is an example, not a record.
+
+#################################################################
+#    System and agents
+#################################################################
+
+:energy-load-forecaster a aidoc:AISystem ;
+    rdfs:label "Energy load forecasting system" ;
+    rdfs:comment "Illustrative AI system that forecasts the hourly electricity load in Germany." ;
+    aidoc:version "1.0" ;
+    aidoc:hasComponent :energy-load-xgb-v1 .
+
+:data-science-team a aidoc:AIResearcher ;
+    rdfs:label "data_science_team" .
+
+:ml-team a aidoc:AIResearcher ;
+    rdfs:label "ml-team" .
+
+#################################################################
+#    Data pipeline (D1 to D6)
+#################################################################
+
+# D1 Data ingestion. The acquisition method is recorded on the dataset (core), see decision D-14.
+
+:opsd-time-series a aidoc:Dataset ;
+    rdfs:label "Open Power System Data, time series, 60-minute resolution, release 2020-10-06" ;
+    dcterms:source <https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min> .
+
+:ingestion a aidoc:DataAcquisitionActivity ;
+    rdfs:label "Download of the OPSD time series" ;
+    aidoc:hasSourceDataset :opsd-time-series ;
+    aidoc:producesDataset :energy-raw ;
+    prov:startedAtTime "2026-02-08T22:00:30Z"^^xsd:dateTime .
+
+:energy-raw a aidoc:Dataset ;
+    rdfs:label "Energy time series, raw (50,401 rows, 300 columns)" ;
+    aidoc:dataCollectionMethod "Download of the published CSV file from Open Power System Data" ;
+    prov:wasDerivedFrom :opsd-time-series .
+
+# D3 Data wrangling (cleaning): two cleaning steps of the pilot.
+
+:missing-value-cleaning a aidoc:DataCleaningProcedure ;
+    rdfs:label "Fill missing values" ;
+    prov:used :energy-raw ;
+    aidoc:producesDataset :energy-cleaned ;
+    aidoc-lc:processingTechnique "clean_missing_values" ;
+    aidoc:missingDataStrategy "Drop rows without a German load value, then forward-fill the remaining gaps." .
+
+:energy-cleaned a aidoc:Dataset ;
+    rdfs:label "Energy time series, cleaned" ;
+    prov:wasDerivedFrom :energy-raw .
+
+:outlier-removal a aidoc:DataCleaningProcedure ;
+    rdfs:label "Remove load outliers" ;
+    prov:used :energy-cleaned ;
+    aidoc:producesDataset :energy-filtered ;
+    aidoc-lc:processingTechnique "remove_outliers_iqr" ;
+    aidoc-lc:hasHyperParameterSetting :setting-iqr-factor , :setting-outlier-column ;
+    aidoc:outlierHandlingMethod "Remove rows whose German load lies more than 1.5 interquartile ranges outside the first or third quartile." .
+
+:energy-filtered a aidoc:Dataset ;
+    rdfs:label "Energy time series, outliers removed" ;
+    prov:wasDerivedFrom :energy-cleaned .
+
+# D2 Exploration and validation: whylogs profile of the cleaned dataset.
+
+:profiling-cleaned a aidoc:ExplorationAndValidation ;
+    rdfs:label "Profile of the cleaned dataset (whylogs)" ;
+    prov:used :energy-cleaned ;
+    aidoc-lc:producesMeasurement :measurement-rows-cleaned , :measurement-nulls-cleaned .
+
+:measurement-rows-cleaned a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-cleaned ;
+    dqv:isMeasurementOf :metric-row-count ;
+    dqv:value "50400"^^xsd:integer .
+
+:measurement-nulls-cleaned a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-cleaned ;
+    dqv:isMeasurementOf :metric-null-count ;
+    dqv:value "0"^^xsd:integer .
+
+:metric-row-count a dqv:Metric ; rdfs:label "counts/n" .
+:metric-null-count a dqv:Metric ; rdfs:label "counts/null" .
+
+# D5 Data preparation: augmentation of the load column with Gaussian noise.
+
+:noise-augmentation a aidoc-lc:DataAugmentation ;
+    rdfs:label "Add noise to the German load series" ;
+    prov:used :energy-filtered ;
+    aidoc:producesDataset :energy-augmented ;
+    aidoc-lc:processingTechnique "augment_with_noise" ;
+    aidoc-lc:hasHyperParameterSetting :setting-noise-factor , :setting-augmented-column .
+
+:energy-augmented a aidoc:Dataset ;
+    rdfs:label "Energy time series, augmented" ;
+    rdfs:comment "Adds the column DE_load_actual_entsoe_transparency_aug." ;
+    prov:wasDerivedFrom :energy-filtered .
+
+# D6 Data splitting: chronological split, last 20 % for testing.
+
+:split-training a aidoc:DataTraining ;
+    rdfs:label "Training split" ;
+    prov:used :energy-augmented ;
+    aidoc:usesTrainingData :energy-train .
+
+:split-testing a aidoc:DataTesting ;
+    rdfs:label "Test split" ;
+    prov:used :energy-augmented ;
+    aidoc:usesTestData :energy-test .
+
+:energy-train a aidoc:Dataset ;
+    rdfs:label "Training data, 2015-01-01 to 2019-08-07" ;
+    aidoc:dataScope "train" ;
+    prov:wasDerivedFrom :energy-augmented .
+
+:energy-test a aidoc:Dataset ;
+    rdfs:label "Test data, 2019-08-08 to 2020-09-30" ;
+    aidoc:dataScope "test" ;
+    prov:wasDerivedFrom :energy-augmented .
+
+#################################################################
+#    ML pipeline (M1 to M4)
+#################################################################
+
+# M1 Model training and engineering (MLflow experiment, Optuna search with 10 trials).
+
+:training a aidoc:ModelEngineering ;
+    rdfs:label "energy-load-xgb training" ;
+    dcterms:identifier "45d3462b5b7c469baec707a9907f56f1" ;
+    prov:startedAtTime "2026-02-08T22:01:39Z"^^xsd:dateTime ;
+    prov:endedAtTime "2026-02-08T22:02:58Z"^^xsd:dateTime ;
+    prov:used :energy-train , :training-code ;
+    aidoc-lc:producesModel :energy-load-xgb-v1 ;
+    aidoc-lc:hasHyperParameterSetting :setting-n-estimators , :setting-max-depth , :setting-learning-rate , :setting-objective ;
+    aidoc-lc:usesComputationalResource :training-host ;
+    aidoc-lc:producesChangeRecord :change-initial-training .
+
+:energy-load-xgb-v1 a aidoc:AIModel ;
+    rdfs:label "energy-load-xgb-v1" ;
+    rdfs:comment "XGBRegressor that forecasts the German hourly load from 298 features." ;
+    aidoc:version "1" ;
+    aidoc:dependsOn :dep-xgboost , :dep-scikit-learn , :dep-pandas , :dep-numpy .
+
+:dep-xgboost a aidoc:SoftwareDependency ; rdfs:label "xgboost==2.1.4" .
+:dep-scikit-learn a aidoc:SoftwareDependency ; rdfs:label "scikit-learn" .
+:dep-pandas a aidoc:SoftwareDependency ; rdfs:label "pandas" .
+:dep-numpy a aidoc:SoftwareDependency ; rdfs:label "numpy" .
+
+:training-host a aidoc:ComputationalResource ;
+    rdfs:label "Training host, 8 CPU cores, no GPU, 7.65 GB RAM" ;
+    aidoc:resourceType "CPU" ;
+    aidoc:resourceConfiguration "cpu_count=8; gpu_count=0; ram_total_size=7.65 GB; duration=79.5 s; energy_consumed=0.0010 kWh" .
+
+# M2 Model evaluation on the test split. The engine logs these values with the stage "train",
+# although the pilot computes them on the test split (a mapping issue for Phase 5).
+
+:evaluation-v1 a aidoc:ModelEvaluation ;
+    rdfs:label "Hold-out evaluation of energy-load-xgb-v1" ;
+    prov:used :energy-test ;
+    aidoc-lc:evaluates :energy-load-xgb-v1 ;
+    aidoc:evaluationMethod "Hold-out evaluation on the last 20 % of the time series, without shuffling." ;
+    aidoc:hasPerformanceMetric :metric-mse , :metric-r2 ;
+    aidoc-lc:producesMeasurement :measurement-mse-v1 , :measurement-r2-v1 ;
+    aidoc-lc:producesTestReport :evaluation-report-v1 .
+
+:metric-mse a aidoc:PerformanceMetric ; rdfs:label "mean squared error (MW²)" .
+:metric-r2 a aidoc:PerformanceMetric ; rdfs:label "R² score" .
+:metric-rmse a aidoc:PerformanceMetric ; rdfs:label "root mean squared error (MW)" .
+
+:measurement-mse-v1 a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-load-xgb-v1 ;
+    dqv:isMeasurementOf :metric-mse ;
+    dqv:value "12966.089"^^xsd:double .
+
+:measurement-r2-v1 a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-load-xgb-v1 ;
+    dqv:isMeasurementOf :metric-r2 ;
+    dqv:value "0.99987"^^xsd:double .
+
+:evaluation-report-v1 a dpv-aiact:TestReport ;
+    rdfs:label "Evaluation report for energy-load-xgb-v1" .
+
+# M3 Model packaging.
+
+:packaging-v1 a aidoc:ModelPackaging ;
+    rdfs:label "Packaging of energy-load-xgb-v1" ;
+    aidoc-lc:packagesModel :energy-load-xgb-v1 ;
+    aidoc-lc:packagingFormat aidoc-lc:MLflowModelFormat ;
+    rdfs:comment "Container: base image python:3.11-slim, 2 CPU, 4 GB memory, registry docker.io/certain/energy-xgb, port 8080." .
+
+# M4 Model versioning: registration of v1, later archival of v1 and registration of v2.
+
+:registration-v1 a aidoc:ModelVersioning ;
+    rdfs:label "Registration of energy-load-xgb-v1 for production" ;
+    aidoc-lc:versionsModel :energy-load-xgb-v1 ;
+    aidoc-lc:assignsRegistryStage aidoc-lc:RegistryProduction ;
+    prov:endedAtTime "2026-02-08T22:10:00Z"^^xsd:dateTime .
+
+:archival-v1 a aidoc:ModelVersioning ;
+    rdfs:label "Archival of energy-load-xgb-v1" ;
+    aidoc-lc:versionsModel :energy-load-xgb-v1 ;
+    aidoc-lc:assignsRegistryStage aidoc-lc:RegistryArchived ;
+    prov:wasInformedBy :decommissioning-v1 ;
+    prov:endedAtTime "2026-09-15T10:00:00Z"^^xsd:dateTime .
+
+:registration-v2 a aidoc:ModelVersioning ;
+    rdfs:label "Registration of energy-load-xgb-v2 for production (illustrative)" ;
+    aidoc-lc:versionsModel :energy-load-xgb-v2 ;
+    aidoc-lc:assignsRegistryStage aidoc-lc:RegistryProduction ;
+    prov:endedAtTime "2026-09-14T16:00:00Z"^^xsd:dateTime .
+
+#################################################################
+#    Code pipeline (S1 to S4)
+#################################################################
+
+# S1 Software development and S4 software versioning of the training code.
+
+:training-code a aidoc:SoftwareImplementation ;
+    rdfs:label "test_full_lifecycle_pilot.py" ;
+    aidoc:version "b41ea271be92" .
+
+:development a aidoc:SoftwareDevelopment ;
+    rdfs:label "Development of the pilot training pipeline" ;
+    aidoc-lc:producesSoftware :training-code ;
+    aidoc:hasResponsibleDeveloper :data-science-team .
+
+:code-versioning a aidoc:SoftwareVersioning ;
+    rdfs:label "Commit of the pilot training pipeline" ;
+    aidoc-lc:versionsSoftware :training-code .
+
+:change-initial-training a aidoc:ChangeRecord ;
+    dcterms:description "Initial training run using OPSD 60-minute time series data with XGBoost regressor and Optuna hyperparameter search." ;
+    prov:wasAttributedTo :data-science-team ;
+    aidoc:endDate "2026-02-08"^^xsd:date .
+
+# S2 Build and integration testing of the packaged model.
+
+:build-test-v1 a aidoc:BuildAndIntegrationTesting ;
+    rdfs:label "Build and integration test of the energy-xgb image" ;
+    aidoc-lc:testsArtifact :energy-load-xgb-v1 ;
+    aidoc-lc:buildStatus aidoc-lc:BuildSucceeded ;
+    aidoc-lc:testLevel aidoc-lc:IntegrationTestLevel ;
+    aidoc-lc:producesTestReport :test-report-v1 ;
+    rdfs:comment "Docker image built successfully. Smoke test: POST /predict returned HTTP 200. All 5 integration tests passed." ;
+    prov:endedAtTime "2026-02-08T22:12:00Z"^^xsd:dateTime .
+
+:test-report-v1 a dpv-aiact:TestReport ;
+    rdfs:label "Integration test report for energy-xgb" ;
+    rdfs:comment "5 tests, 5 passed, 0 failed, 0 skipped; coverage 92 %." .
+
+# S3 Deployment and model serving.
+
+:deployment-v1 a aidoc:Deployment ;
+    rdfs:label "Deployment dep-energy-xgb-45d3462b" ;
+    dcterms:identifier "dep-energy-xgb-45d3462b" ;
+    aidoc-lc:deploys :energy-load-xgb-v1 ;
+    aidoc-lc:servingEndpoint "http://energy-xgb.example.org:8080/predict"^^xsd:anyURI ;
+    aidoc-lc:usesComputationalResource :serving-container ;
+    prov:startedAtTime "2026-02-08T22:15:00Z"^^xsd:dateTime .
+
+:serving-container a aidoc:ComputationalResource ;
+    rdfs:label "energy-xgb serving container, 2 CPU, 4 GB" ;
+    aidoc:resourceType "container" .
+
+#################################################################
+#    Operation (O2 to O4)
+#################################################################
+
+# O2 Post-market monitoring: drift of the German load (illustrative values).
+
+:monitoring-2026 a aidoc:PostMarketMonitoringActivity ;
+    rdfs:label "Monitoring of energy-load-xgb-v1 in 2026 (illustrative)" ;
+    aidoc-lc:monitors :energy-load-xgb-v1 ;
+    aidoc-lc:producesMeasurement :drift-2026-05 , :drift-2026-08 .
+
+:metric-psi a dqv:Metric ;
+    rdfs:label "population stability index of DE_load_actual_entsoe_transparency" .
+
+:drift-2026-05 a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-load-xgb-v1 ;
+    dqv:isMeasurementOf :metric-psi ;
+    dqv:value "0.07"^^xsd:double ;
+    dcterms:created "2026-05-01T00:00:00Z"^^xsd:dateTime .
+
+:drift-2026-08 a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-load-xgb-v1 ;
+    dqv:isMeasurementOf :metric-psi ;
+    dqv:value "0.23"^^xsd:double ;
+    dcterms:created "2026-08-01T00:00:00Z"^^xsd:dateTime .
+
+# O3 Re-evaluation in 2026 on a hold-out set with 2024 data (illustrative values). It informs the retraining
+# of v2 and the decommissioning of v1.
+
+:holdout-2024 a aidoc:Dataset ;
+    rdfs:label "Hold-out data covering 2024 (illustrative)" .
+
+:reevaluation-2026 a aidoc:PostMarketPerformanceEvaluationActivity ;
+    rdfs:label "Re-evaluation of energy-load-xgb-v1 on the 2024 hold-out set (illustrative)" ;
+    prov:used :holdout-2024 , :drift-2026-08 ;
+    aidoc-lc:evaluates :energy-load-xgb-v1 ;
+    aidoc-lc:producesMeasurement :measurement-rmse-v1-holdout .
+
+:measurement-rmse-v1-holdout a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-load-xgb-v1 ;
+    dqv:isMeasurementOf :metric-rmse ;
+    dqv:value "142.0"^^xsd:double .
+
+:retraining a aidoc:ModelEngineering ;
+    rdfs:label "Retraining on updated OPSD data (illustrative)" ;
+    prov:wasInformedBy :reevaluation-2026 ;
+    prov:used :training-code ;
+    aidoc-lc:producesModel :energy-load-xgb-v2 ;
+    aidoc-lc:usesComputationalResource :training-host .
+
+:energy-load-xgb-v2 a aidoc:AIModel ;
+    rdfs:label "energy-load-xgb-v2" ;
+    aidoc:version "2" ;
+    prov:wasRevisionOf :energy-load-xgb-v1 .
+
+:evaluation-v2 a aidoc:ModelEvaluation ;
+    rdfs:label "Evaluation of energy-load-xgb-v2 on the 2024 hold-out set (illustrative)" ;
+    prov:used :holdout-2024 ;
+    aidoc-lc:evaluates :energy-load-xgb-v2 ;
+    aidoc-lc:producesMeasurement :measurement-rmse-v2-holdout .
+
+:measurement-rmse-v2-holdout a dqv:QualityMeasurement ;
+    dqv:computedOn :energy-load-xgb-v2 ;
+    dqv:isMeasurementOf :metric-rmse ;
+    dqv:value "116.4"^^xsd:double .
+
+# O4 Retirement and decommissioning of v1 (values from the pilot script).
+
+:decommissioning-v1 a aidoc:Decommissioning ;
+    rdfs:label "Decommissioning of energy-load-xgb-v1" ;
+    prov:wasInformedBy :reevaluation-2026 ;
+    aidoc-lc:decommissions :energy-load-xgb-v1 ;
+    aidoc-lc:decommissioningReason "Replaced by energy-load-xgb-v2 which achieves 18% lower RMSE on the 2024 holdout set after retraining on updated OPSD data." ;
+    aidoc-lc:decommissioningAction "disable REST API endpoint" ,
+        "archive model weights to cold storage" ,
+        "remove Docker image from registry" ,
+        "update model registry status to 'archived'" ,
+        "notify stakeholders via email" ;
+    rdfs:comment "Endpoint traffic was drained over 24h using a canary rollout. Weights archived to s3://certain-archive/models/energy-xgb-v1/." ;
+    prov:endedAtTime "2026-09-15T09:00:00Z"^^xsd:dateTime ;
+    aidoc-lc:producesChangeRecord :change-decommissioning .
+
+:change-decommissioning a aidoc:ChangeRecord ;
+    dcterms:description "Model energy-load-xgb-v1 (deployment dep-energy-xgb-45d3462b) decommissioned. Replaced by energy-load-xgb-v2. Traffic migrated via 24h canary rollout." ;
+    prov:wasAttributedTo :ml-team ;
+    aidoc:endDate "2026-09-15"^^xsd:date .
+
+#################################################################
+#    Hyperparameter settings (ML Schema)
+#################################################################
+
+:setting-n-estimators a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-n-estimators ; mls:hasValue "40"^^xsd:integer .
+:setting-max-depth a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-max-depth ; mls:hasValue "6"^^xsd:integer .
+:setting-learning-rate a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-learning-rate ; mls:hasValue "0.28326"^^xsd:double .
+:setting-objective a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-objective ; mls:hasValue "reg:squarederror" .
+:setting-iqr-factor a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-iqr-factor ; mls:hasValue "1.5"^^xsd:double .
+:setting-outlier-column a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-column ; mls:hasValue "DE_load_actual_entsoe_transparency" .
+:setting-noise-factor a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-noise-factor ; mls:hasValue "0.01"^^xsd:double .
+:setting-augmented-column a mls:HyperParameterSetting ;
+    mls:specifiedBy :hp-column ; mls:hasValue "DE_load_actual_entsoe_transparency" .
+
+:hp-n-estimators a mls:HyperParameter ; rdfs:label "n_estimators" .
+:hp-max-depth a mls:HyperParameter ; rdfs:label "max_depth" .
+:hp-learning-rate a mls:HyperParameter ; rdfs:label "learning_rate" .
+:hp-objective a mls:HyperParameter ; rdfs:label "objective (loss function)" .
+:hp-iqr-factor a mls:HyperParameter ; rdfs:label "iqr_factor" .
+:hp-noise-factor a mls:HyperParameter ; rdfs:label "noise_factor" .
+:hp-column a mls:HyperParameter ; rdfs:label "column" .
