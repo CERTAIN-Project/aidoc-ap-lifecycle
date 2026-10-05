@@ -170,7 +170,7 @@ def main() -> int:
         for row in csv.DictReader(open(GROUNDING_CSV, encoding="utf-8")):
             term = (row.get("term") or "").strip()
             if term.startswith(f"{LC_PREFIX}:"):
-                grounded.add(LC_NS + term.split(":", 1)[1])
+                grounded.add(URIRef(LC_NS + term.split(":", 1)[1]))
     cq_text = "\n".join(p.read_text(encoding="utf-8") for p in sorted(CQ_DIR.glob("*.rq"))) if CQ_DIR.exists() else ""
     for t in terms:
         if OWL.AnnotationProperty in set(g.objects(t, RDF.type)):
