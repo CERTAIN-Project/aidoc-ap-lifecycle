@@ -1,0 +1,18 @@
+# CQ: Which model does deployment D serve, at which endpoint, and on which runtime?
+# Stage: S3
+# Terms: aidoc-lc:deploys, aidoc-lc:servingEndpoint, aidoc-lc:usesComputationalResource
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?deployment ?model ?version ?endpoint ?runtime ?started WHERE {
+  ?deployment a aidoc:Deployment ;
+              aidoc-lc:deploys ?model .
+  OPTIONAL { ?model aidoc:version ?version }
+  OPTIONAL { ?deployment aidoc-lc:servingEndpoint ?endpoint }
+  OPTIONAL { ?deployment aidoc-lc:usesComputationalResource/rdfs:label ?runtime }
+  OPTIONAL { ?deployment prov:startedAtTime ?started }
+}
+ORDER BY ?started

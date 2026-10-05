@@ -71,6 +71,16 @@
     rdfs:comment "Relates a build and integration testing activity to the outcome of its build, such as succeeded or failed. Values are concepts, for example from the scheme aidoc-lc:BuildStatuses."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
 
+###  https://w3id.org/aidoc-ap/lifecycle#deploys
+:deploys rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:Deployment ;
+    rdfs:range [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:AIModel aidoc:AISystem ) ] ;
+    rdfs:label "deploys"@en ;
+    rdfs:comment "Relates a deployment activity to the AI model or AI system that it installs and makes available in a target environment."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#evaluates
 :evaluates rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:used ;
@@ -196,6 +206,16 @@
 #    Datatype properties
 #################################################################
 
+
+###  https://w3id.org/aidoc-ap/lifecycle#servingEndpoint
+:servingEndpoint rdf:type owl:DatatypeProperty ;
+    rdfs:domain aidoc:Deployment ;
+    rdfs:range xsd:anyURI ;
+    rdfs:label "serving endpoint"@en ;
+    rdfs:comment "The network address at which a deployment serves predictions of the deployed model or system."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(1)(d)" ;
+    skos:example "https://models.example.org/energy-load/v1/predict" .
 
 #################################################################
 #    Individuals (concept schemes for categorical values)
