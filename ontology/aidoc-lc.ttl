@@ -54,6 +54,15 @@
 #    Object properties
 #################################################################
 
+
+###  https://w3id.org/aidoc-ap/lifecycle#assignsRegistryStage
+:assignsRegistryStage rdf:type owl:ObjectProperty ;
+    rdfs:domain aidoc:ModelVersioning ;
+    rdfs:range skos:Concept ;
+    rdfs:label "assigns registry stage"@en ;
+    rdfs:comment "Relates a model versioning activity to the stage it assigns to the model version in a model registry, such as staging, production or archived. Values are concepts, for example from the scheme aidoc-lc:RegistryStages."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#evaluates
 :evaluates rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:used ;
@@ -125,6 +134,15 @@
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source "EU AI Act 2024/1689, Annex IV(2)(c)" .
 
+###  https://w3id.org/aidoc-ap/lifecycle#versionsModel
+:versionsModel rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:ModelVersioning ;
+    rdfs:range aidoc:AIModel ;
+    rdfs:label "versions model"@en ;
+    rdfs:comment "Relates a model versioning activity to the AI model version that it registers or whose status it changes."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(1)(c)" .
 
 #################################################################
 #    Datatype properties
@@ -134,6 +152,7 @@
 #################################################################
 #    Individuals (concept schemes for categorical values)
 #################################################################
+
 
 ###  https://w3id.org/aidoc-ap/lifecycle#PackagingFormats
 :PackagingFormats rdf:type skos:ConceptScheme ;
@@ -194,3 +213,36 @@
     skos:definition "A serialised PyTorch program that can be loaded and run without a Python interpreter."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source <https://pytorch.org/docs/stable/jit.html> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#RegistryStages
+:RegistryStages rdf:type skos:ConceptScheme ;
+    skos:prefLabel "Registry stages"@en ;
+    skos:definition "Seed list of the stages a model version can hold in a model registry, taken from the MLflow Model Registry. MLflow 2.9 deprecated stages in favour of aliases; values from other schemes may be used with aidoc-lc:assignsRegistryStage."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#RegistryStaging
+:RegistryStaging rdf:type skos:Concept ;
+    skos:inScheme :RegistryStages ;
+    skos:topConceptOf :RegistryStages ;
+    skos:prefLabel "Staging"@en ;
+    skos:definition "The registry stage of a model version that is being prepared and tested for production use."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://mlflow.org/docs/latest/model-registry.html> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#RegistryProduction
+:RegistryProduction rdf:type skos:Concept ;
+    skos:inScheme :RegistryStages ;
+    skos:topConceptOf :RegistryStages ;
+    skos:prefLabel "Production"@en ;
+    skos:definition "The registry stage of a model version that serves the production system."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://mlflow.org/docs/latest/model-registry.html> .
+
+###  https://w3id.org/aidoc-ap/lifecycle#RegistryArchived
+:RegistryArchived rdf:type skos:Concept ;
+    skos:inScheme :RegistryStages ;
+    skos:topConceptOf :RegistryStages ;
+    skos:prefLabel "Archived"@en ;
+    skos:definition "The registry stage of a model version that is kept for reference but no longer served."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source <https://mlflow.org/docs/latest/model-registry.html> .

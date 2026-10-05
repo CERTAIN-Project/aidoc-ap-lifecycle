@@ -1,0 +1,18 @@
+# CQ: Which versions of model M were registered, and to which registry stage was each version moved?
+# Stage: M4
+# Terms: aidoc-lc:versionsModel, aidoc-lc:assignsRegistryStage
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?model ?version ?previous ?versioning ?stage ?time WHERE {
+  ?versioning a aidoc:ModelVersioning ;
+              aidoc-lc:versionsModel ?model .
+  OPTIONAL { ?model aidoc:version ?version }
+  OPTIONAL { ?model prov:wasRevisionOf ?previous }
+  OPTIONAL { ?versioning aidoc-lc:assignsRegistryStage/skos:prefLabel ?stage }
+  OPTIONAL { ?versioning prov:endedAtTime ?time }
+}
+ORDER BY ?model ?time
