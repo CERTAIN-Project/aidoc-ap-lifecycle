@@ -1,0 +1,20 @@
+# CQ: Which evaluation activities assessed model M, and which measurements did they produce?
+# Stage: M2
+# Terms: aidoc-lc:evaluates, aidoc-lc:producesMeasurement
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?model ?evaluation ?metric ?value WHERE {
+  ?evaluation a aidoc:ModelEvaluation ;
+              aidoc-lc:evaluates ?model .
+  OPTIONAL {
+    ?evaluation aidoc-lc:producesMeasurement ?measurement .
+    ?measurement dqv:isMeasurementOf ?metricNode ;
+                 dqv:value ?value .
+    ?metricNode rdfs:label ?metric .
+  }
+}
+ORDER BY ?model ?evaluation ?metric

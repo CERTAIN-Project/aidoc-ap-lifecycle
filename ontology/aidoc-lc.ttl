@@ -54,6 +54,18 @@
 #    Object properties
 #################################################################
 
+###  https://w3id.org/aidoc-ap/lifecycle#evaluates
+:evaluates rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:ModelEvaluation aidoc:PostMarketPerformanceEvaluationActivity ) ] ;
+    rdfs:range [ rdf:type owl:Class ;
+                 owl:unionOf ( aidoc:AIModel aidoc:AISystem ) ] ;
+    rdfs:label "evaluates"@en ;
+    rdfs:comment "Relates an evaluation activity, before release or after deployment, to the AI model or AI system whose performance it assesses."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC 22989:2022, AI system life cycle: verification and validation, re-evaluation" .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#hasHyperParameterSetting
 :hasHyperParameterSetting rdf:type owl:ObjectProperty ;
     rdfs:domain [ rdf:type owl:Class ;
@@ -64,6 +76,17 @@
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source "EU AI Act 2024/1689, Annex IV(2)(b)" ;
     skos:example "The experiment that trained an XGBoost load forecaster has the settings learning_rate = 0.05 and max_depth = 6."@en .
+
+###  https://w3id.org/aidoc-ap/lifecycle#producesMeasurement
+:producesMeasurement rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:generated ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:ExplorationAndValidation aidoc:DataProcessing aidoc:ModelEvaluation aidoc:PostMarketMonitoringActivity aidoc:PostMarketPerformanceEvaluationActivity ) ] ;
+    rdfs:range dqv:QualityMeasurement ;
+    rdfs:label "produces measurement"@en ;
+    rdfs:comment "Relates an activity that profiles, evaluates or monitors data or models to a quality measurement it computes, such as a missing-value rate, a test accuracy or a drift score."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    skos:example "A model evaluation activity produces a measurement of the metric RMSE with the value 812.4, computed on the trained model."@en .
 
 ###  https://w3id.org/aidoc-ap/lifecycle#producesModel
 :producesModel rdf:type owl:ObjectProperty ;
