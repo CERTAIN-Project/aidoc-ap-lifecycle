@@ -1,0 +1,17 @@
+# CQ: When and why was model M decommissioned, and which actions were carried out?
+# Stage: O4
+# Terms: aidoc-lc:decommissions, aidoc-lc:decommissioningReason, aidoc-lc:decommissioningAction
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?model ?decommissioning ?time ?reason (GROUP_CONCAT(?action; separator="; ") AS ?actions) WHERE {
+  ?decommissioning a aidoc:Decommissioning ;
+                   aidoc-lc:decommissions ?model .
+  OPTIONAL { ?decommissioning prov:endedAtTime ?time }
+  OPTIONAL { ?decommissioning aidoc-lc:decommissioningReason ?reason }
+  OPTIONAL { ?decommissioning aidoc-lc:decommissioningAction ?action }
+}
+GROUP BY ?model ?decommissioning ?time ?reason
+ORDER BY ?time

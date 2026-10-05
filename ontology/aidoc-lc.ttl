@@ -71,6 +71,17 @@
     rdfs:comment "Relates a build and integration testing activity to the outcome of its build, such as succeeded or failed. Values are concepts, for example from the scheme aidoc-lc:BuildStatuses."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
 
+###  https://w3id.org/aidoc-ap/lifecycle#decommissions
+:decommissions rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:invalidated ;
+    rdfs:domain aidoc:Decommissioning ;
+    rdfs:range [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:AIModel aidoc:AISystem ) ] ;
+    rdfs:label "decommissions"@en ;
+    rdfs:comment "Relates a decommissioning activity to the AI model or AI system that it takes out of operation."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "ISO/IEC 22989:2022, AI system life cycle: retirement" .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#deploys
 :deploys rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:used ;
@@ -238,6 +249,24 @@
 #    Datatype properties
 #################################################################
 
+
+###  https://w3id.org/aidoc-ap/lifecycle#decommissioningAction
+:decommissioningAction rdf:type owl:DatatypeProperty ;
+    rdfs:domain aidoc:Decommissioning ;
+    rdfs:range xsd:string ;
+    rdfs:label "decommissioning action"@en ;
+    rdfs:comment "A step carried out as part of a decommissioning activity, such as disabling an endpoint or archiving model weights."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    skos:example "archive model weights to cold storage"@en .
+
+###  https://w3id.org/aidoc-ap/lifecycle#decommissioningReason
+:decommissioningReason rdf:type owl:DatatypeProperty ;
+    rdfs:domain aidoc:Decommissioning ;
+    rdfs:range xsd:string ;
+    rdfs:label "decommissioning reason"@en ;
+    rdfs:comment "The reason why a model or system is taken out of operation, for example its replacement by a retrained version."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    skos:example "Replaced by a retrained model with lower error on the current holdout set."@en .
 
 ###  https://w3id.org/aidoc-ap/lifecycle#servingEndpoint
 :servingEndpoint rdf:type owl:DatatypeProperty ;
