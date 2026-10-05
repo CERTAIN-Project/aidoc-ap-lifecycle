@@ -1,0 +1,40 @@
+# Test fixture only: NOT a design proposal. Exercises the OCI criteria
+# (pipeline-level links, stage-level links, owl:unionOf domains, datatype descriptors).
+@prefix : <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<https://w3id.org/aidoc-ap/lifecycle#> a owl:Ontology ;
+    owl:imports <https://w3id.org/aidoc-ap/1.2> ;
+    owl:versionIRI <https://w3id.org/aidoc-ap/lifecycle/0.0-test> ;
+    owl:versionInfo "0.0-test" ;
+    dcterms:title "test"@en ; dcterms:description "test"@en ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    vann:preferredNamespacePrefix "aidoc-lc" ;
+    vann:preferredNamespaceUri "https://w3id.org/aidoc-ap/lifecycle#" .
+
+:fxProducesModel a owl:ObjectProperty ; rdfs:domain aidoc:MLPipeline ; rdfs:range aidoc:AIModel ;
+    rdfs:label "fx produces model"@en ; rdfs:comment "Fixture."@en .
+:fxProducesSoftware a owl:ObjectProperty ; rdfs:domain aidoc:SoftwareCodePipeline ; rdfs:range aidoc:SoftwareComponent ;
+    rdfs:label "fx produces software"@en ; rdfs:comment "Fixture."@en .
+:fxConcernsSystem a owl:ObjectProperty ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( aidoc:PostMarketMonitoringActivity aidoc:PostMarketPerformanceEvaluationActivity ) ] ;
+    rdfs:range aidoc:AISystem ;
+    rdfs:label "fx concerns system"@en ; rdfs:comment "Fixture."@en .
+
+:fxD1 a owl:DatatypeProperty ; rdfs:domain aidoc:DataAcquisitionActivity ; rdfs:range xsd:string ; rdfs:label "fx d1"@en ; rdfs:comment "Fixture."@en .
+:fxD2 a owl:DatatypeProperty ; rdfs:domain aidoc:ExplorationAndValidation ; rdfs:range xsd:string ; rdfs:label "fx d2"@en ; rdfs:comment "Fixture."@en .
+:fxD5 a owl:DatatypeProperty ; rdfs:domain aidoc:DataProcessing ; rdfs:range xsd:string ; rdfs:label "fx d5"@en ; rdfs:comment "Fixture."@en .
+:fxM1 a owl:DatatypeProperty ; rdfs:domain aidoc:ModelEngineering ; rdfs:range xsd:string ; rdfs:label "fx m1"@en ; rdfs:comment "Fixture."@en .
+:fxM3 a owl:DatatypeProperty ; rdfs:domain aidoc:ModelPackaging ; rdfs:range xsd:string ; rdfs:label "fx m3"@en ; rdfs:comment "Fixture."@en .
+:fxM4 a owl:DatatypeProperty ; rdfs:domain aidoc:ModelVersioning ; rdfs:range xsd:string ; rdfs:label "fx m4"@en ; rdfs:comment "Fixture."@en .
+:fxS2 a owl:DatatypeProperty ; rdfs:domain aidoc:BuildAndIntegrationTesting ; rdfs:range xsd:string ; rdfs:label "fx s2"@en ; rdfs:comment "Fixture."@en .
+:fxS3 a owl:DatatypeProperty ; rdfs:domain aidoc:Deployment ; rdfs:range xsd:string ; rdfs:label "fx s3"@en ; rdfs:comment "Fixture."@en .
+:fxS4 a owl:DatatypeProperty ; rdfs:domain aidoc:SoftwareVersioning ; rdfs:range xsd:string ; rdfs:label "fx s4"@en ; rdfs:comment "Fixture."@en .
+:fxO4 a owl:DatatypeProperty ; rdfs:domain aidoc:Decommissioning ; rdfs:range xsd:string ; rdfs:label "fx o4"@en ; rdfs:comment "Fixture."@en .

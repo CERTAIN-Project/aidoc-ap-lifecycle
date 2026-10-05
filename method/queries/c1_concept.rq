@@ -1,0 +1,14 @@
+# OCI criterion C1 (Concept)
+# A stage is represented if every class listed for it in method/stage_profile.json
+# is declared as owl:Class and is a (transitive) subclass of the anchor activity
+# class aidoc:AIActivity, which the core declares a subclass of prov:Activity.
+# Placeholders {{...}} are filled in by scripts/oci.py.
+
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?class WHERE {
+  VALUES ?class { {{CLASSES}} }
+  ?class a owl:Class ;
+         rdfs:subClassOf+ {{ANCHOR}} .
+}

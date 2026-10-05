@@ -1,0 +1,26 @@
+{
+  "repository": "https://github.com/certain-project/aidoc-ap",
+  "tag": "v1.2",
+  "commit": "b04e5577b4f360f5ece44e6bf6281b7a90f696c7",
+  "files": {
+    "LICENSE-CC-BY.txt": "9e5f1b3c610b9c2da5c313bf81d577a7d1acec686bdb0384edefa6df0f90cd94",
+    "aidoc-ap.ttl": "468be0cce09d4a1fd719e5a760f742b19aa31b06707e32631afde7e4775186ea",
+    "annex_4.ttl": "5e6fbb5c0e16fe7f9990623a7c0eada43c0ce195345ba9b1bfd482d6a660b4a7",
+    "reference_ontologies/airo.ttl": "6274d2d8711e046cf38f1b5b2980188094d4aa87b5af79804005a06468fd8469",
+    "reference_ontologies/dcat3.ttl": "d1624d3bbf364f6fc1d43b9a188bbb9e67639b1a7d46a5cb7ea3f5d47d02b62f",
+    "reference_ontologies/dpv-ai.ttl": "796070d3570c5d00b14878fe9c2d728c4098500993b8bb4433db0568c484afff",
+    "reference_ontologies/dpv-aiact.ttl": "be3dae8aa9ef297df5dca470785182ece3d0aac7c4d775581f51fd1af6eaaa76",
+    "reference_ontologies/dpv-tech.ttl": "a9d09590fce70e859f744f86f2a903e34dc74dbeb79ed77e4b7fdcb80eeab356",
+    "reference_ontologies/dpv.ttl": "97bc7ce1a4544d39b9e480eeb7990693bee1155fb094f3dd50b9eb1d0c0d578f",
+    "reference_ontologies/dqv.ttl": "cc333223d13c663e027456ea43b15a63c1a25505bc752599953f380420573863",
+    "reference_ontologies/mcro.ttl": "e3ca94921783b21b14c3ca888b7de7fbafcbc36274b3f6c67b605775a5178db0",
+    "reference_ontologies/mex-algo.ttl": "4dacfa11206cd10c0e6c554b1c0b356b75fe245687b21c42a90bdfe02314f286",
+    "reference_ontologies/mex-core.ttl": "c46c5fd5799bcf2801286cb396072da5d592c03b207c33697f590c9b81a07a3d",
+    "reference_ontologies/mex-perf.ttl": "76ab6e05dc657f869afd7892912f2dcd89de46200db6493981afdeed1ac9bafd",
+    "reference_ontologies/ml-onto.ttl": "d5aa5066896148ab838df6b345def938f697a92ebabaaa3298e515b96ce0f5b4",
+    "reference_ontologies/mlschema.ttl": "5eb9572cde53e362f74113b9292f07a9d9ad115d811341489fa00dba4dd0f35e",
+    "reference_ontologies/prov-o.ttl": "7d203989f67b38bca572253942acc5a1bf24ce3ccfece16f072dcb4be2b79a96",
+    "reference_ontologies/rains.ttl": "5903d663dbdb61d036aae4414c1c0473539035f96412c68a8bcb90116f54b10f",
+    "reference_ontologies/vair.ttl": "6b42323726e7a82a5c4782a6d9398fc44db21bd4e0ca9fd4807558190c173605"
+  }
+}

@@ -1,0 +1,28 @@
+# OCI criterion C2 (Traceability)
+# A stage is traceable if an object property defined in a framework namespace
+# (AIDOC-AP core or one of its modules) has as rdfs:domain the stage class or one
+# of its superclasses strictly below aidoc:AIActivity (the pipeline class), and as
+# rdfs:range a class that is (transitively) an aidoc:AIArtifact or prov:Entity.
+# Properties on aidoc:AIActivity itself (e.g. aidoc:affects) and the generic PROV-O
+# relations that every activity inherits do not count.
+# owl:unionOf domains and ranges are expanded.
+
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?property ?domain ?range WHERE {
+  VALUES ?class { {{CLASSES}} }
+  VALUES ?root  { {{ARTEFACT_ROOTS}} }
+  ?class rdfs:subClassOf* ?domain .
+  ?domain rdfs:subClassOf+ {{ANCHOR}} .
+  { ?property rdfs:domain ?domain }
+  UNION
+  { ?property rdfs:domain/owl:unionOf/rdf:rest*/rdf:first ?domain }
+  ?property a owl:ObjectProperty .
+  { ?property rdfs:range ?range }
+  UNION
+  { ?property rdfs:range/owl:unionOf/rdf:rest*/rdf:first ?range }
+  ?range rdfs:subClassOf* ?root .
+  FILTER ( {{NS_FILTER}} )
+}

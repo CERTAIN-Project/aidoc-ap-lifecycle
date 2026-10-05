@@ -1,0 +1,24 @@
+# Test fixture only: violates the module rules on purpose.
+@prefix : <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<https://w3id.org/aidoc-ap/lifecycle#> a owl:Ontology ;
+    owl:imports <https://w3id.org/aidoc-ap/1.2> ;
+    owl:versionIRI <https://w3id.org/aidoc-ap/lifecycle/0.0-bad> ;
+    owl:versionInfo "0.0-bad" ;
+    dcterms:title "bad"@en ; dcterms:description "bad"@en ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    vann:preferredNamespacePrefix "aidoc-lc" ;
+    vann:preferredNamespaceUri "https://w3id.org/aidoc-ap/lifecycle#" .
+
+# rule violation: axiom about a core term
+aidoc:ModelPackaging rdfs:comment "Changed by the module."@en .
+
+# rule violation: no label, range not declared anywhere
+:BadName a owl:ObjectProperty ; rdfs:domain aidoc:ModelPackaging ; rdfs:range <http://example.org/Undeclared> ;
+    rdfs:comment "Fixture."@en .

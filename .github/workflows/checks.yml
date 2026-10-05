@@ -1,0 +1,60 @@
+name: Module checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch pinned AIDOC-AP core and verify checksums
+        run: bash scripts/fetch_core.sh
+
+      - name: Module rules, tooling tests, OCI, competency queries
+        run: make PY=python check test oci-core oci cq
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports/
+
+  reasoner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build merged framework (core + module, imports removed)
+        run: |
+          pip install -r requirements.txt
+          bash scripts/fetch_core.sh
+          mkdir -p reports
+          python scripts/merge.py --out reports/framework_merged.ttl
+
+      - name: Consistency check with HermiT (same procedure as the core repository)
+        run: |
+          wget -q -O HermiT.zip http://www.hermit-reasoner.com/download/current/HermiT.zip
+          unzip -q HermiT.zip
+          HERMIT_JAR=$(find . -name "HermiT*.jar" | head -n 1)
+          ! java -jar "$HERMIT_JAR" --ignoreUnsupportedDatatypes -k reports/framework_merged.ttl 2>&1 | grep -Ei "Exception|Error|Unsatisfiable|Invalid"

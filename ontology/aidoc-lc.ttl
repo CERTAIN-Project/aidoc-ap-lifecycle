@@ -1,0 +1,60 @@
+@prefix : <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#> .
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix schema: <https://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix dpv: <https://w3id.org/dpv#> .
+@prefix dpv-ai: <https://w3id.org/dpv/ai#> .
+@prefix dpv-tech: <https://w3id.org/dpv/tech#> .
+@prefix dpv-aiact: <https://w3id.org/dpv/legal/eu/aiact#> .
+@prefix airo: <https://w3id.org/airo#> .
+@prefix vair: <https://w3id.org/vair#> .
+@base <https://w3id.org/aidoc-ap/lifecycle#> .
+
+# AIDOC-AP Lifecycle Extension (aidoc-lc)
+
+<https://w3id.org/aidoc-ap/lifecycle#> rdf:type owl:Ontology ;
+    owl:imports <https://w3id.org/aidoc-ap/1.2> ;
+    owl:versionIRI <https://w3id.org/aidoc-ap/lifecycle/0.1> ;
+    owl:versionInfo "0.1" ;
+    dcterms:title "AIDOC-AP Lifecycle Extension"@en ;
+    rdfs:label "AIDOC-AP Lifecycle Extension"@en ;
+    dcterms:description "Extension module of the AIDOC-AP application profile. It adds the terms needed to describe the stages of the AI system lifecycle that the AIDOC-AP core, which is restricted to the documentation duties of Annex IV of the EU AI Act, does not cover in detail: links from lifecycle activities to the artefacts they use and produce, and stage-specific descriptions. The module imports the core and does not change any core definition."@en ;
+    dcterms:creator [ rdf:type foaf:Person ;
+                      foaf:name "Sebastian Neumaier" ;
+                      foaf:mbox <mailto:sebastian.neumaier@ustp.at> ;
+                      foaf:organization "University of Applied Sciences St. Pölten" ] ;
+    # dcterms:contributor: add the contributors according to their roles before the first release
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:publisher [ foaf:name "CERTAIN Project" ;
+                        foaf:homepage <https://certain-project.eu> ] ;
+    dcterms:language "en" ;
+    vann:preferredNamespacePrefix "aidoc-lc" ;
+    vann:preferredNamespaceUri "https://w3id.org/aidoc-ap/lifecycle#" ;
+    schema:funding <https://cordis.europa.eu/project/id/101189650> ;
+    skos:note "Draft, not released."@en .
+
+#################################################################
+#    Classes
+#################################################################
+
+
+#################################################################
+#    Object properties
+#################################################################
+
+
+#################################################################
+#    Datatype properties
+#################################################################

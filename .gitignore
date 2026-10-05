@@ -1,0 +1,8 @@
+.venv/
+reports/
+vendor/aidoc-ap/
+vendor/engine/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

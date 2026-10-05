@@ -1,0 +1,18 @@
+# OCI criterion C3 (Description)
+# A stage is described if at least one object or datatype property defined in a
+# framework namespace has the stage class itself as rdfs:domain (directly or as a
+# member of an owl:unionOf domain). Properties inherited from a pipeline class or
+# from aidoc:AIActivity do not count.
+
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?property WHERE {
+  VALUES ?class { {{CLASSES}} }
+  { ?property rdfs:domain ?class }
+  UNION
+  { ?property rdfs:domain/owl:unionOf/rdf:rest*/rdf:first ?class }
+  { ?property a owl:ObjectProperty } UNION { ?property a owl:DatatypeProperty }
+  FILTER ( {{NS_FILTER}} )
+}
