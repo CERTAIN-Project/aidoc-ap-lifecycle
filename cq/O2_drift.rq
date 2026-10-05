@@ -1,0 +1,19 @@
+# CQ: Which drift measurements did post-market monitoring record for the deployed model, and when?
+# Stage: O2
+# Terms: aidoc-lc:monitors, aidoc-lc:producesMeasurement
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?model ?monitoring ?metric ?value ?time WHERE {
+  ?monitoring a aidoc:PostMarketMonitoringActivity ;
+              aidoc-lc:monitors ?model ;
+              aidoc-lc:producesMeasurement ?measurement .
+  ?measurement dqv:isMeasurementOf/rdfs:label ?metric ;
+               dqv:value ?value .
+  OPTIONAL { ?measurement dcterms:created ?time }
+}
+ORDER BY ?model ?time

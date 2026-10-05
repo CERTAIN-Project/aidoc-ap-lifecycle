@@ -104,6 +104,17 @@
     dcterms:source "EU AI Act 2024/1689, Annex IV(2)(b)" ;
     skos:example "The experiment that trained an XGBoost load forecaster has the settings learning_rate = 0.05 and max_depth = 6."@en .
 
+###  https://w3id.org/aidoc-ap/lifecycle#monitors
+:monitors rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:PostMarketMonitoringActivity ;
+    rdfs:range [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:AIModel aidoc:AISystem ) ] ;
+    rdfs:label "monitors"@en ;
+    rdfs:comment "Relates a post-market monitoring activity to the deployed AI model or AI system whose behaviour it observes."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Article 72" .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#packagesModel
 :packagesModel rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:used ;

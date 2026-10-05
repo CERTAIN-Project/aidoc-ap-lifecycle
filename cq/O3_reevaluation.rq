@@ -1,0 +1,25 @@
+# CQ: Which re-evaluations assessed the deployed model after release, what did they measure, and which activity followed?
+# Stage: O3
+# Terms: aidoc-lc:evaluates, aidoc-lc:producesMeasurement
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?model ?reevaluation ?metric ?value ?followUp ?followUpType WHERE {
+  ?reevaluation a aidoc:PostMarketPerformanceEvaluationActivity ;
+                aidoc-lc:evaluates ?model .
+  OPTIONAL {
+    ?reevaluation aidoc-lc:producesMeasurement ?measurement .
+    ?measurement dqv:isMeasurementOf/rdfs:label ?metric ;
+                 dqv:value ?value .
+  }
+  OPTIONAL {
+    ?followUp prov:wasInformedBy ?reevaluation ;
+              a ?followUpType .
+    FILTER (STRSTARTS(STR(?followUpType), STR(aidoc:)) && ?followUpType != aidoc:AIActivity)
+  }
+}
+ORDER BY ?model ?reevaluation
