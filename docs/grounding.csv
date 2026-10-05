@@ -1,1 +1,45 @@
 term,stage,criterion,evidence_type,evidence,cq
+aidoc-lc:DataAugmentation,D5,-,engine,"test_docker/test_full_lifecycle_pilot.py: augment_with_noise, logged with log_dataset(output_dir=""data_augmentation"")",D5_augmentation.rq
+aidoc-lc:DataAugmentation,D5,-,source,"Studer et al., Towards CRISP-ML(Q): A Machine Learning Process Model with Quality Assurance Methodology, arXiv:2003.05155, data preparation phase (feature engineering and data augmentation activities)",D5_augmentation.rq
+aidoc-lc:Tokenization,D5,-,engine,tokenizer_config.tokenizer_type; tokenizer_config.model_name_or_path; tokenization_stats.total_tokens,D5_tokenization.rq
+aidoc-lc:hasHyperParameterSetting,M1,C3,engine,model_hyperparameters.key; model_hyperparameters.value; model_architecture.loss_function; model_architecture.optimizer,M1_hyperparameters.rq
+aidoc-lc:hasHyperParameterSetting,M1,C3,source,"AI Act Annex IV 2(b): what the system is designed to optimise for and the relevance of the different parameters (aiact:cq9_5)",M1_hyperparameters.rq
+aidoc-lc:hasHyperParameterSetting,D5,C3,engine,data_hyperparameters.technique_parameter_name; data_hyperparameters.technique_parameter_value; tokenizer_config.vocab_size; tokenizer_config.max_length; tokenizer_config.padding; tokenizer_config.truncation; tokenizer_config.stride; tokenizer_config.special_tokens,D5_technique_parameters.rq
+aidoc-lc:processingTechnique,D5,C3,engine,data_techniques.technique_name,D5_technique_parameters.rq
+aidoc-lc:processingTechnique,D5,C3,source,"AI Act Art. 10(2)(c) data-preparation processing operations; Annex IV 2(d) data cleaning methodologies (aiact:cq11_5)",D5_technique_parameters.rq
+aidoc-lc:producesMeasurement,D2,C3,engine,data_metrics.key; data_metrics.value; data_metrics.is_NaN,D2_data_quality.rq
+aidoc-lc:producesMeasurement,D5,C3,engine,tokenization_stats.oov_rate; tokenization_stats.truncation_rate; tokenization_stats.padding_rate; tokenization_stats.avg_token_length,D5_tokenization.rq
+aidoc-lc:producesMeasurement,M2,-,engine,model_metrics.key; model_metrics.value; last_model_metrics.value,M2_evaluated_model.rq
+aidoc-lc:producesMeasurement,O2,C3,engine,drift_metrics.value,O2_drift.rq
+aidoc-lc:producesMeasurement,O3,C3,source,"ISO/IEC 22989:2022 re-evaluation stage, cited through dpv-ai:ReevaluationStage; AI Act Art. 72(2)",O3_reevaluation.rq
+aidoc-lc:producesModel,M1,C2;C3,engine,model_architecture.model_id; checkpoints.checkpoint_name,M1_model_provenance.rq
+aidoc-lc:producesModel,M1,C2;C3,source,"AI Act Annex IV 2(a): methods and steps performed for the development of the AI system (aiact:cq8_1)",M1_model_provenance.rq
+aidoc-lc:usesComputationalResource,M1,-,engine,resources.key; resources.value; data_resources.key; data_resources.value,M1_compute_resources.rq
+aidoc-lc:usesComputationalResource,S3,-,engine,runtime_environment.server_name; runtime_environment.performance,M1_compute_resources.rq
+aidoc-lc:usesComputationalResource,M1,-,source,"AI Act Annex IV 2(c): computational resources used to develop, train, test and validate the AI system (aiact:cq10_4)",M1_compute_resources.rq
+aidoc-lc:evaluates,M2,C2,engine,model_metrics.key; last_model_metrics.key; weight_distribution.layer_name,M2_evaluated_model.rq
+aidoc-lc:evaluates,O3,C2;C3,source,"ISO/IEC 22989:2022 re-evaluation stage, cited through dpv-ai:ReevaluationStage; AI Act Art. 72(2); Annex IV 9 (aiact:cq22_1)",O3_reevaluation.rq
+aidoc-lc:producesTestReport,S2,C3,engine,build_and_integration_testing.test_results; build_and_integration_testing.build_logs,S2_build_tests.rq
+aidoc-lc:producesTestReport,M2,-,source,"AI Act Annex IV 2(g): test logs and all test reports dated and signed by the responsible persons (aiact:cq14_4)",S2_build_tests.rq
+aidoc-lc:packagesModel,M3,C2;C3,engine,model_packaging.model_id,M3_package_format.rq
+aidoc-lc:packagingFormat,M3,C3,engine,model_packaging.packaging_format,M3_package_format.rq
+aidoc-lc:versionsModel,M4,C2;C3,engine,model_deployed.model_version; model_architecture.model_version,M4_registry_stage.rq
+aidoc-lc:versionsModel,M4,C2;C3,source,"AI Act Annex IV 1(c): versions of relevant software and requirements related to version updates (aiact:cq3_1)",M4_registry_stage.rq
+aidoc-lc:assignsRegistryStage,M4,C3,engine,model_deployed.current_stage,M4_registry_stage.rq
+aidoc-lc:producesSoftware,S1,C2,engine,runs_code.git_commit_hash; runs_code.name,S1_software_provenance.rq
+aidoc-lc:producesSoftware,S1,C2,source,"AI Act Annex IV 2(a): methods and steps performed for the development of the AI system (aiact:cq8_1)",S1_software_provenance.rq
+aidoc-lc:testsArtifact,S2,C2;C3,engine,build_and_integration_testing.model_id; build_and_integration_testing.deployment_id,S2_build_tests.rq
+aidoc-lc:buildStatus,S2,C3,engine,build_and_integration_testing.build_status,S2_build_tests.rq
+aidoc-lc:testLevel,S2,C3,engine,build_and_integration_testing.test_type,S2_build_tests.rq
+aidoc-lc:deploys,S3,C2;C3,engine,model_deployed.model_id; model_deployed.deployment_id,S3_deployment_endpoint.rq
+aidoc-lc:servingEndpoint,S3,C3,engine,model_deployed.endpoint,S3_deployment_endpoint.rq
+aidoc-lc:servingEndpoint,S3,C3,source,"AI Act Annex IV 1(d): forms in which the AI system is placed on the market or put into service (aiact:cq4_1)",S3_deployment_endpoint.rq
+aidoc-lc:versionsSoftware,S4,C2;C3,engine,runs_code.git_commit_hash,S4_software_version.rq
+aidoc-lc:versionsSoftware,S4,C2;C3,source,"AI Act Annex IV 1(c): versions of relevant software and requirements related to version updates (aiact:cq3_1)",S4_software_version.rq
+aidoc-lc:producesChangeRecord,S4,-,engine,change_logs.change_description; change_logs.changed_by; change_logs.change_timestamp,S4_change_history.rq
+aidoc-lc:producesChangeRecord,S4,-,source,"AI Act Annex IV 6: relevant changes made by the provider to the system through its lifecycle (aiact:cq19_1)",S4_change_history.rq
+aidoc-lc:monitors,O2,C2;C3,engine,drift_metrics.value; monitor_logs.message,O2_drift.rq
+aidoc-lc:monitors,O2,C2;C3,source,"AI Act Art. 72(1) and (2): post-market monitoring of the performance of high-risk AI systems",O2_drift.rq
+aidoc-lc:decommissions,O4,C2;C3,engine,decomissioning.model_id; decomissioning.deployment_id,O4_decommissioning.rq
+aidoc-lc:decommissioningReason,O4,C3,engine,decomissioning.reason,O4_decommissioning.rq
+aidoc-lc:decommissioningAction,O4,C3,engine,decomissioning.decomissioning_actions,O4_decommissioning.rq
