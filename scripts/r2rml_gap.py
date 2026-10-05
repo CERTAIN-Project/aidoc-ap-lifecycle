@@ -77,27 +77,51 @@ def engine_tables(models_py: pathlib.Path) -> dict:
     return tables
 
 
-def select_aliases(sql: str) -> dict:
-    """Map each alias in the SELECT list to the identifiers used in its expression."""
-    m = re.search(r"\bSELECT\b(.*?)\bFROM\b", sql, re.I | re.S)
-    if not m:
-        return {}
+def _split_top(s: str, sep: str = ",") -> list:
     items, depth, cur = [], 0, ""
-    for ch in m.group(1):
+    for ch in s:
         depth += ch == "("
         depth -= ch == ")"
-        if ch == "," and depth == 0:
+        if ch == sep and depth == 0:
             items.append(cur)
             cur = ""
         else:
             cur += ch
     items.append(cur)
+    return items
+
+
+def _lateral_values(sql: str) -> dict:
+    """For 'CROSS JOIN LATERAL (VALUES ('k', t.col), ...) AS s(key, value)': value -> identifiers."""
     out = {}
-    for item in items:
-        am = re.search(r"\bAS\s+\"?(\w+)\"?\s*$", item.strip(), re.I)
-        if am:
-            expr = item.strip()[: am.start()]
-            out[am.group(1)] = set(re.findall(r"\b([A-Za-z_]\w*)\b", expr))
+    for body, cols in re.findall(r"LATERAL\s*\(\s*VALUES\s*(.*?)\)\s*AS\s*\w+\s*\(([^)]*)\)", sql, re.I | re.S):
+        names = [c.strip() for c in cols.split(",")]
+        for tup in re.findall(r"\(((?:[^()]|\([^()]*\))*)\)", body):
+            for name, expr in zip(names, _split_top(tup)):
+                out.setdefault(name, set()).update(re.findall(r"\b[A-Za-z_]\w*\.\"?(\w+)\"?", expr))
+    return out
+
+
+def select_aliases(sql: str) -> dict:
+    """Map each output column of the query to the identifiers used in its expression, over all
+    top-level UNION branches. Columns produced by a LATERAL VALUES list are traced to the
+    columns used in the list."""
+    lateral = _lateral_values(sql)
+    out = {}
+    for branch in re.split(r"\bUNION(?:\s+ALL)?\b", sql, flags=re.I):
+        m = re.search(r"\bSELECT\b(.*?)\bFROM\b", branch, re.I | re.S)
+        if not m:
+            continue
+        for item in _split_top(m.group(1)):
+            item = item.strip()
+            am = re.search(r"\bAS\s+\"?(\w+)\"?\s*$", item, re.I)
+            if am:
+                expr = item[: am.start()]
+                out.setdefault(am.group(1), set()).update(re.findall(r"\b([A-Za-z_]\w*)\b", expr))
+            else:
+                qm = re.fullmatch(r"(?:\w+\.)?\"?(\w+)\"?", item)
+                if qm and qm.group(1) in lateral:
+                    out.setdefault(qm.group(1), set()).update(lateral[qm.group(1)])
     return out
 
 
@@ -193,10 +217,13 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--engine", default=str(ROOT / "vendor" / "engine"))
     ap.add_argument("--module", default=str(MODULE_TTL))
+    ap.add_argument("--mapping", default=None, help="R2RML file to analyse (default: the engine's ontop/input/aidoc-ap_r2rml.ttl)")
     ap.add_argument("--out", default=None, help="Markdown output (default: stdout)")
     args = ap.parse_args()
     eng = pathlib.Path(args.engine)
-    models, r2rml_path = eng / "data_api" / "app" / "models.py", eng / "ontop" / "input" / "aidoc-ap_r2rml.ttl"
+    models = eng / "data_api" / "app" / "models.py"
+    r2rml_path = pathlib.Path(args.mapping) if args.mapping else eng / "ontop" / "input" / "aidoc-ap_r2rml.ttl"
+    mapping_label = r2rml_path.name if args.mapping else "ontop/input/aidoc-ap_r2rml.ttl"
     if not models.exists() or not r2rml_path.exists():
         print(f"ERROR: engine files not found under {eng}; run scripts/fetch_engine.sh")
         return 1
@@ -232,7 +259,7 @@ def main() -> int:
     out = [
         "# T5.4 gap analysis: Semantic MLOps Engine vs. ontology framework", "",
         f"Generated {date.today().isoformat()} by `scripts/r2rml_gap.py` from the engine at `{ref[:12]}` "
-        f"(`data_api/app/models.py`, `ontop/input/aidoc-ap_r2rml.ttl`). Re-run with `make gap`.", "",
+        f"(`data_api/app/models.py`, `{mapping_label}`). Re-run with `make gap`.", "",
         f"Columns: {counts['mapped']} mapped with specific terms, {counts['generic only']} mapped only through "
         f"generic predicates, {counts['unmapped']} not mapped, {counts['key']} keys.", "",
         "Generic predicates: " + ", ".join(sorted(qname(p) for p in GENERIC)) + ".", "",

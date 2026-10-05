@@ -1,0 +1,4 @@
+# Triples maps of the engine mapping (ontop/input/aidoc-ap_r2rml.ttl) that the proposal removes.
+# One name per line, then the reason.
+PostMarketPerformanceEvaluationActivityTriplesMap  # types runtime_environment rows as re-evaluation activities; the engine records no re-evaluation (O3)
+DataTechniquesTriplesMap  # put technique names and stages on the dataset with aidoc:dataCollectionMethod and aidoc:dataScope; replaced by DataCleaningProcedure, DataProcessing and DataAugmentation triples maps
