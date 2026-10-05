@@ -1,0 +1,20 @@
+# CQ: Which model engineering activity trained model M, and which checkpoints did it produce?
+# Stage: M1
+# Terms: aidoc-lc:producesModel
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?engineering ?model ?checkpoint ?ended WHERE {
+  ?engineering a aidoc:ModelEngineering ;
+               aidoc-lc:producesModel ?model .
+  OPTIONAL { ?engineering prov:endedAtTime ?ended }
+  OPTIONAL {
+    ?engineering aidoc-lc:producesModel ?checkpoint .
+    ?checkpoint prov:wasDerivedFrom ?model .
+  }
+  FILTER NOT EXISTS { ?model prov:wasDerivedFrom ?other . ?engineering aidoc-lc:producesModel ?other }
+}
+ORDER BY ?engineering ?model ?checkpoint

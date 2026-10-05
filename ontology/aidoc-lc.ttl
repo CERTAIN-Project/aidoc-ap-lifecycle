@@ -54,6 +54,37 @@
 #    Object properties
 #################################################################
 
+###  https://w3id.org/aidoc-ap/lifecycle#hasHyperParameterSetting
+:hasHyperParameterSetting rdf:type owl:ObjectProperty ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:ModelEngineering aidoc:DataWrangling aidoc:DataProcessing ) ] ;
+    rdfs:range mls:HyperParameterSetting ;
+    rdfs:label "has hyperparameter setting"@en ;
+    rdfs:comment "Relates a model engineering or data preparation activity to a hyperparameter setting that was fixed before the activity ran, such as a learning rate, an optimiser, an outlier threshold or a maximum sequence length."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(2)(b)" ;
+    skos:example "The experiment that trained an XGBoost load forecaster has the settings learning_rate = 0.05 and max_depth = 6."@en .
+
+###  https://w3id.org/aidoc-ap/lifecycle#producesModel
+:producesModel rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:generated ;
+    rdfs:domain aidoc:ModelEngineering ;
+    rdfs:range aidoc:AIModel ;
+    rdfs:label "produces model"@en ;
+    rdfs:comment "Relates a model engineering activity to an AI model or model checkpoint that it trains."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(2)(a)" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#usesComputationalResource
+:usesComputationalResource rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:AIActivity ;
+    rdfs:range aidoc:ComputationalResource ;
+    rdfs:label "uses computational resource"@en ;
+    rdfs:comment "Relates a lifecycle activity to a computational resource it runs on, such as a GPU, a cluster node or a serving instance."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(2)(c)" .
+
 
 #################################################################
 #    Datatype properties

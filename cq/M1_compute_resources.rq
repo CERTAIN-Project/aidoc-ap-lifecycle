@@ -1,0 +1,20 @@
+# CQ: On which computational resources was model M trained, and on which is it served?
+# Stage: M1
+# Terms: aidoc-lc:usesComputationalResource, aidoc-lc:producesModel, aidoc-lc:deploys
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?model ?activity ?activityType ?resource ?resourceType WHERE {
+  {
+    ?activity aidoc-lc:producesModel ?model .
+    BIND (aidoc:ModelEngineering AS ?activityType)
+  } UNION {
+    ?activity aidoc-lc:deploys ?model .
+    BIND (aidoc:Deployment AS ?activityType)
+  }
+  ?activity aidoc-lc:usesComputationalResource ?resource .
+  OPTIONAL { ?resource aidoc:resourceType ?resourceType }
+}
+ORDER BY ?model ?activityType
