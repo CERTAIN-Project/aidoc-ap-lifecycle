@@ -50,6 +50,22 @@
 #################################################################
 
 
+###  https://w3id.org/aidoc-ap/lifecycle#DataAugmentation
+:DataAugmentation rdf:type owl:Class ;
+    rdfs:subClassOf aidoc:DataProcessing ;
+    rdfs:label "Data Augmentation"@en ;
+    rdfs:comment "Data preparation activity that adds synthetic or transformed records to a dataset, for example by injecting noise, resampling or applying label-preserving transformations, in order to enlarge or balance the training data."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "Studer et al., Towards CRISP-ML(Q): A Machine Learning Process Model with Quality Assurance Methodology, arXiv:2003.05155, data preparation phase" ;
+    skos:example "Adding Gaussian noise to the load measurements of an energy time series before training."@en .
+
+###  https://w3id.org/aidoc-ap/lifecycle#Tokenization
+:Tokenization rdf:type owl:Class ;
+    rdfs:subClassOf aidoc:DataProcessing ;
+    rdfs:label "Tokenization"@en ;
+    rdfs:comment "Data preparation activity that splits text into tokens and encodes them for a language model according to a tokenizer configuration. Tokenizer settings are recorded as hyperparameter settings and the resulting statistics as quality measurements."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
+
 #################################################################
 #    Object properties
 #################################################################
@@ -267,6 +283,17 @@
     rdfs:comment "The reason why a model or system is taken out of operation, for example its replacement by a retrained version."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     skos:example "Replaced by a retrained model with lower error on the current holdout set."@en .
+
+###  https://w3id.org/aidoc-ap/lifecycle#processingTechnique
+:processingTechnique rdf:type owl:DatatypeProperty ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:DataWrangling aidoc:DataProcessing ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:label "processing technique"@en ;
+    rdfs:comment "The name of the technique that a data wrangling or data preparation activity applies, such as outlier removal by interquartile range or min-max scaling."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Article 10(2)(c) and Annex IV(2)(d)" ;
+    skos:example "remove_outliers_iqr"@en .
 
 ###  https://w3id.org/aidoc-ap/lifecycle#servingEndpoint
 :servingEndpoint rdf:type owl:DatatypeProperty ;

@@ -1,0 +1,14 @@
+# CQ: Was the training data augmented, how, and from which dataset was the augmented dataset derived?
+# Stage: D5
+# Terms: aidoc-lc:DataAugmentation, aidoc-lc:processingTechnique
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?augmentation ?technique ?source ?augmented WHERE {
+  ?augmentation a aidoc-lc:DataAugmentation .
+  OPTIONAL { ?augmentation aidoc-lc:processingTechnique ?technique }
+  OPTIONAL { ?augmentation prov:used ?source }
+  OPTIONAL { ?augmentation aidoc:producesDataset ?augmented }
+}

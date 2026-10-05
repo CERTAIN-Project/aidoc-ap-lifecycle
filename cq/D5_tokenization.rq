@@ -1,0 +1,24 @@
+# CQ: Which tokenizer settings were used, and what share of sequences was truncated?
+# Stage: D5
+# Terms: aidoc-lc:Tokenization, aidoc-lc:hasHyperParameterSetting, aidoc-lc:producesMeasurement
+
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?tokenization ?kind ?name ?value WHERE {
+  ?tokenization a aidoc-lc:Tokenization .
+  {
+    ?tokenization aidoc-lc:hasHyperParameterSetting ?setting .
+    ?setting mls:specifiedBy/rdfs:label ?name ;
+             mls:hasValue ?value .
+    BIND ("setting" AS ?kind)
+  } UNION {
+    ?tokenization aidoc-lc:producesMeasurement ?measurement .
+    ?measurement dqv:isMeasurementOf/rdfs:label ?name ;
+                 dqv:value ?value .
+    BIND ("statistic" AS ?kind)
+  }
+}
+ORDER BY ?tokenization ?kind ?name

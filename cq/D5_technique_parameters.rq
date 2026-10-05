@@ -1,0 +1,21 @@
+# CQ: Which preparation techniques and parameter settings were applied to dataset X before training?
+# Stage: D5
+# Terms: aidoc-lc:processingTechnique, aidoc-lc:hasHyperParameterSetting
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?input ?activity ?technique ?parameter ?value ?output WHERE {
+  ?activity aidoc-lc:processingTechnique ?technique .
+  OPTIONAL { ?activity prov:used ?input }
+  OPTIONAL { ?activity aidoc:producesDataset ?output }
+  OPTIONAL {
+    ?activity aidoc-lc:hasHyperParameterSetting ?setting .
+    ?setting mls:specifiedBy/rdfs:label ?parameter ;
+             mls:hasValue ?value .
+  }
+}
+ORDER BY ?input ?activity ?parameter

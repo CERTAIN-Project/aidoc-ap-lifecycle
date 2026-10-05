@@ -1,0 +1,17 @@
+# CQ: Which quality measurements were computed for dataset X during exploration and validation?
+# Stage: D2
+# Terms: aidoc-lc:producesMeasurement
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?dataset ?validation ?metric ?value WHERE {
+  ?validation a aidoc:ExplorationAndValidation ;
+              aidoc-lc:producesMeasurement ?measurement .
+  ?measurement dqv:computedOn ?dataset ;
+               dqv:isMeasurementOf/rdfs:label ?metric ;
+               dqv:value ?value .
+}
+ORDER BY ?dataset ?metric
