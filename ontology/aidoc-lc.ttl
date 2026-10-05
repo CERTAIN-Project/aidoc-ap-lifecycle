@@ -124,6 +124,17 @@
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source "EU AI Act 2024/1689, Annex IV(2)(a)" .
 
+###  https://w3id.org/aidoc-ap/lifecycle#producesSoftware
+:producesSoftware rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:generated ;
+    rdfs:domain aidoc:SoftwareDevelopment ;
+    rdfs:range [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:SoftwareImplementation aidoc:SoftwareComponent ) ] ;
+    rdfs:label "produces software"@en ;
+    rdfs:comment "Relates a software development activity to the software implementation or software component that it writes or changes."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(2)(a)" .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#usesComputationalResource
 :usesComputationalResource rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:used ;

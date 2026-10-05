@@ -1,0 +1,18 @@
+# CQ: Which development activity produced the code revision that trained model M, and who was responsible?
+# Stage: S1
+# Terms: aidoc-lc:producesSoftware, aidoc-lc:producesModel
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?model ?code ?revision ?development ?developer WHERE {
+  ?engineering aidoc-lc:producesModel ?model ;
+               prov:used ?code .
+  ?development a aidoc:SoftwareDevelopment ;
+               aidoc-lc:producesSoftware ?code .
+  OPTIONAL { ?code aidoc:version ?revision }
+  OPTIONAL { ?development aidoc:hasResponsibleDeveloper/rdfs:label ?developer }
+}
+ORDER BY ?model
