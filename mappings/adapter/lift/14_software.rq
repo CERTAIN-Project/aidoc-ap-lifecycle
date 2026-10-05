@@ -1,0 +1,32 @@
+# Rule: code is used by its run and experiment, produced by a development activity per commit and
+# versioned by the software versioning activity (S1, S4). Engine: code prov:wasGeneratedBy run (the run only executes it).
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?run prov:used ?code .
+  ?exp prov:used ?code .
+  ?dev a aidoc:SoftwareDevelopment , aidoc:AIActivity ;
+       rdfs:label ?devLabel ;
+       aidoc-lc:producesSoftware ?code .
+  ?sv aidoc-lc:versionsSoftware ?code .
+}
+WHERE {
+  ?code a aidoc:SoftwareImplementation .
+  OPTIONAL { ?code prov:wasGeneratedBy ?run . OPTIONAL { ?run prov:wasInfluencedBy ?exp . ?exp a aidoc:ModelEngineering } }
+  OPTIONAL {
+    ?code aidoc:version ?hash . FILTER (STR(?hash) != "")
+    BIND (IRI(CONCAT("https://w3id.org/aidoc-ap/software-development/", ENCODE_FOR_URI(STR(?hash)))) AS ?dev)
+    BIND (CONCAT("Development of commit ", STR(?hash)) AS ?devLabel)
+  }
+  OPTIONAL { ?sv a aidoc:SoftwareVersioning ; prov:wasInfluencedBy ?code . }
+}

@@ -1,0 +1,31 @@
+# Rule: statements that replace engine statements in the wrong place (domain and range conflicts).
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?phase aidoc:hasAIActivity ?act .
+  ?exp schema:status ?state .
+  ?ex prov:wasGeneratedBy ?run ; prov:wasDerivedFrom ?m .
+  ?doc a aidoc:TechnicalDocumentation .
+}
+WHERE {
+  { ?sys aidoc:hasAIActivity ?act . ?sys a aidoc:AISystem .
+    FILTER (STRSTARTS(STR(?sys), "https://w3id.org/aidoc-ap/ai-system/"))
+    BIND (IRI(REPLACE(STR(?sys), "/ai-system/", "/lifecycle-phase/")) AS ?phase) }
+  UNION
+  { ?exp a aidoc:ModelEngineering ; aidoc:hasLifecycleStage ?s .
+    BIND (STRAFTER(STR(?s), "/lifecycle-stage/") AS ?state) }
+  UNION
+  { ?ex prov:wasGeneratedBy ?m . ?m a aidoc:AIModel ; prov:wasGeneratedBy ?run . }
+  UNION
+  { ?doc a aidoc:VisualDocumentation . }
+}

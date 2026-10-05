@@ -5,6 +5,7 @@
 PREFIX aidoc: <https://w3id.org/aidoc-ap#>
 PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
 PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?model ?engineering ?parameter ?value WHERE {
@@ -14,5 +15,10 @@ SELECT ?model ?engineering ?parameter ?value WHERE {
   ?setting mls:specifiedBy ?hyperparameter ;
            mls:hasValue ?value .
   ?hyperparameter rdfs:label ?parameter .
+  # Where settings are linked to runs (ML Schema), keep only those of the run that trained the model.
+  FILTER NOT EXISTS {
+    ?otherRun mls:hasInput ?setting .
+    FILTER NOT EXISTS { ?model prov:wasGeneratedBy ?otherRun }
+  }
 }
 ORDER BY ?model ?parameter

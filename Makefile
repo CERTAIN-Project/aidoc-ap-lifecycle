@@ -2,7 +2,7 @@
 PY ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 MODULE := ontology/aidoc-lc.ttl
 
-.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments mapping-check all release-check fetch-core fetch-engine fetch-engine-excerpt
+.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments overlay-check overlay-build adapter-check all release-check fetch-core fetch-engine fetch-engine-excerpt
 
 setup:
 	python3 -m venv .venv
@@ -42,9 +42,19 @@ test:
 alignments:
 	$(PY) scripts/alignments.py
 
-mapping-check: | reports
-	$(PY) scripts/mapping_proposal.py
-	$(PY) scripts/r2rml_gap.py --mapping reports/aidoc-ap_r2rml_merged.ttl --out reports/gap_after_proposal.md
+overlay-check: | reports
+	$(PY) scripts/r2rml_overlay.py
+	$(PY) scripts/r2rml_gap.py --mapping reports/aidoc-ap_r2rml_merged.ttl --out reports/gap_after_overlay.md
+
+overlay-build: overlay-check merged
+	mkdir -p reports/ontop
+	cp reports/aidoc-ap_r2rml_merged.ttl reports/ontop/mapping.ttl
+	cp reports/framework_merged.ttl reports/ontop/framework.ttl
+	@echo "Ontop input written to reports/ontop (see mappings/README.md, path b)"
+
+adapter-check: | reports
+	$(PY) scripts/adapt_engine_graph.py --input vendor/engine/ontop/input/knowledge_graph.rdf mappings/adapter/engine_output_sample.ttl
+	$(PY) scripts/run_cqs.py --data reports/engine_lifted.ttl --md reports/cq_engine.md
 
 lint-text:
 	$(PY) scripts/style.py $(wildcard docs/*.md deliverable/*.md)

@@ -1,0 +1,31 @@
+# Rule: the versioning record versions its model and carries the registry stage of the deployment (M4).
+# Engine: versioning prov:wasInfluencedBy model; deployment aidoc:hasLifecycleStage <.../lifecycle-stage/{current_stage}>.
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?mv aidoc-lc:versionsModel ?m .
+  ?m aidoc:version ?v .
+  ?mv aidoc-lc:assignsRegistryStage ?concept .
+}
+WHERE {
+  ?mv a aidoc:ModelVersioning ; prov:wasInfluencedBy ?m .
+  ?m a aidoc:AIModel .
+  OPTIONAL { ?mv aidoc:version ?v }
+  OPTIONAL {
+    ?dep a aidoc:Deployment ; prov:used ?m ; aidoc:hasLifecycleStage ?stage .
+    VALUES (?name ?concept) {
+      ("staging" aidoc-lc:RegistryStaging) ("production" aidoc-lc:RegistryProduction) ("archived" aidoc-lc:RegistryArchived)
+    }
+    FILTER (LCASE(STRAFTER(STR(?stage), "/lifecycle-stage/")) = ?name)
+  }
+}

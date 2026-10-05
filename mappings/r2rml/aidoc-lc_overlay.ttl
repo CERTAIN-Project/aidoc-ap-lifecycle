@@ -14,17 +14,18 @@
 @prefix dpv-aiact: <https://w3id.org/dpv/legal/eu/aiact#> .
 
 # =============================================================================
-# Proposal: R2RML changes for the AIDOC-AP Lifecycle Extension
+# R2RML overlay of the AIDOC-AP Lifecycle Extension for the Semantic MLOps Engine
 # =============================================================================
 # Base: ontop/input/aidoc-ap_r2rml.ttl of the Semantic MLOps Engine, commit b41ea27.
-# This file is a proposal to be agreed with the T5.4 partners; it does not change the
-# engine repository.
+# The engine is not changed. Engine mapping plus overlay form this repository's own mapping,
+# run by a separate Ontop endpoint with read access to the engine database
+# (mappings/r2rml/ontop/).
 #
 # How to read it (see mappings/README.md):
 #   - A triples map with the same name as one in the engine file REPLACES that triples map.
 #   - A triples map with a new name is ADDED.
-#   - Triples maps listed in mappings/removed_triples_maps.txt are REMOVED.
-# `make mapping-check` merges the engine file with this proposal into
+#   - Triples maps listed in mappings/r2rml/removed_triples_maps.txt are REMOVED.
+# `make overlay-check` merges the engine file with this overlay into
 # reports/aidoc-ap_r2rml_merged.ttl and checks the result.
 #
 # IRI templates follow the engine. Changed templates are marked "IRI change".
@@ -149,6 +150,19 @@
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/experiments/{experiment_id}" ] ;
     rr:predicateObjectMap [ rr:predicate aidoc-lc:hasHyperParameterSetting ;
+        rr:objectMap [ rr:template "https://w3id.org/aidoc-ap/models/{run_id}/{model_id}/hyperparameter/{hp_key}" ; rr:termType rr:IRI ] ] .
+
+# NEW. Run-level link with ML Schema (mls:hasInput, domain mls:Run), so that settings stay
+# attributable to their run when an experiment has several runs (decision D-15).
+<#RunHasHyperparameterTriplesMap>
+    a rr:TriplesMap ;
+    rr:logicalTable [ rr:sqlQuery """
+        SELECT run_id, model_id, key AS hp_key FROM model_hyperparameters
+        UNION SELECT run_id, model_id, 'loss_function' AS hp_key FROM model_architecture WHERE loss_function IS NOT NULL
+        UNION SELECT run_id, model_id, 'optimizer' AS hp_key FROM model_architecture WHERE optimizer IS NOT NULL
+    """ ] ;
+    rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/runs/{run_id}" ; rr:class mls:Run ] ;
+    rr:predicateObjectMap [ rr:predicate mls:hasInput ;
         rr:objectMap [ rr:template "https://w3id.org/aidoc-ap/models/{run_id}/{model_id}/hyperparameter/{hp_key}" ; rr:termType rr:IRI ] ] .
 
 # NEW. One mls:HyperParameter per name, shared by model, data and tokenizer settings.

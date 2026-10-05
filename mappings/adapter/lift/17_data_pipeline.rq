@@ -1,0 +1,30 @@
+# Rule: data acquisition produces its dataset and the acquisition method moves to the dataset (D1, D-14);
+# split activities use their datasets through the core properties (D6).
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?acq aidoc:producesDataset ?d .
+  ?d aidoc:dataCollectionMethod ?method .
+  ?acq aidoc:hasSourceDataset ?source .
+  ?tr aidoc:usesTrainingData ?dt .
+  ?va aidoc:usesValidationData ?dv .
+  ?te aidoc:usesTestData ?dte .
+}
+WHERE {
+  { ?acq a aidoc:DataAcquisitionActivity ; prov:generated ?d .
+    OPTIONAL { ?acq aidoc:dataCollectionMethod ?method }
+    OPTIONAL { ?acq dcterms:source ?s . FILTER (REGEX(STR(?s), "^https?://")) BIND (IRI(STR(?s)) AS ?source) } }
+  UNION { ?tr a aidoc:DataTraining ; prov:used ?dt . }
+  UNION { ?va a aidoc:DataValidation ; prov:used ?dv . }
+  UNION { ?te a aidoc:DataTesting ; prov:used ?dte . }
+}

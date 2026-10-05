@@ -1,0 +1,24 @@
+# Rule: metric rows are measurements of a metric (dqv:QualityMeasurement), not metrics.
+# Engine: row typed aidoc:PerformanceMetric or dqv:Metric with rdfs:label key, rdf:value, dqv:computedOn.
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?x a dqv:QualityMeasurement , prov:Entity ; dqv:isMeasurementOf ?metric ; dqv:value ?val .
+  ?metric a dqv:Metric ; rdfs:label ?k .
+}
+WHERE {
+  ?x dqv:computedOn ?target ; rdfs:label ?k ; rdf:value ?v .
+  FILTER (STR(?k) != "Drift Metric")
+  BIND (IRI(CONCAT("https://w3id.org/aidoc-ap/metrics/", ENCODE_FOR_URI(STR(?k)))) AS ?metric)
+  BIND (IF(REGEX(STR(?v), "^[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?$"), STRDT(STR(?v), xsd:double), STR(?v)) AS ?val)
+}

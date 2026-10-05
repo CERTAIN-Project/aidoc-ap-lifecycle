@@ -1,0 +1,28 @@
+# Rule: MLflow parameters become ML Schema hyperparameter settings of the experiment (D-15) and inputs of
+# their run (mls:hasInput), so that settings stay attributable when an experiment has several runs.
+# Engine: setting mls:specifiedBy model (should be the hyperparameter); rdfs:label key; rdf:value value.
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?s a mls:HyperParameterSetting ; mls:specifiedBy ?hp ; mls:hasValue ?v .
+  ?hp a mls:HyperParameter ; rdfs:label ?k .
+  ?exp aidoc-lc:hasHyperParameterSetting ?s .
+  ?run a mls:Run ; mls:hasInput ?s .
+}
+WHERE {
+  ?s mls:specifiedBy ?m ; rdfs:label ?k ; rdf:value ?v .
+  ?m a aidoc:AIModel ; prov:wasGeneratedBy ?run .
+  ?run prov:wasInfluencedBy ?exp .
+  ?exp a aidoc:ModelEngineering .
+  BIND (IRI(CONCAT("https://w3id.org/aidoc-ap/hyperparameters/", ENCODE_FOR_URI(STR(?k)))) AS ?hp)
+}

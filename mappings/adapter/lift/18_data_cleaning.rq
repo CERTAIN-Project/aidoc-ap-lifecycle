@@ -1,0 +1,20 @@
+# Rule: technique names of cleaning activities (aidoc:dataCollectionMethod, domain aidoc:Dataset) become
+# aidoc-lc:processingTechnique. The engine renders the array column as text '{a,b}': braces are removed,
+# the list stays one value (SPARQL 1.1 cannot split strings).
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT { ?c aidoc-lc:processingTechnique ?technique . }
+WHERE {
+  ?c a aidoc:DataCleaningProcedure ; aidoc:dataCollectionMethod ?t .
+  BIND (REPLACE(REPLACE(STR(?t), "^[{]", ""), "[}]$", "") AS ?technique)
+}

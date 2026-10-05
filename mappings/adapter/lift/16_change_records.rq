@@ -1,0 +1,31 @@
+# Rule: the run that logged a change produces the change record; dates, authors and the change log of the system.
+# Engine: change log typed prov:Activity; record prov:endedAtTime and prov:wasAssociatedWith (a name string).
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?run aidoc-lc:producesChangeRecord ?rec .
+  ?rec aidoc:endDate ?date .
+  ?rec prov:wasAttributedTo ?agent .
+  ?agent a prov:Agent ; rdfs:label ?name .
+  ?sys aidoc:hasChangeLog ?log .
+}
+WHERE {
+  ?log a aidoc:ChangeLog ; aidoc:hasChangeRecord ?rec .
+  OPTIONAL { ?log prov:wasInfluencedBy ?run .
+             OPTIONAL { ?run prov:wasInfluencedBy ?exp . FILTER (STRSTARTS(STR(?exp), "https://w3id.org/aidoc-ap/experiments/"))
+                        BIND (IRI(REPLACE(STR(?exp), "/experiments/", "/ai-system/")) AS ?sys) } }
+  OPTIONAL { ?rec prov:endedAtTime ?t . BIND (STRDT(SUBSTR(STR(?t), 1, 10), xsd:date) AS ?date) }
+  OPTIONAL { ?rec prov:wasAssociatedWith ?who . FILTER (isLiteral(?who))
+             BIND (STR(?who) AS ?name)
+             BIND (IRI(CONCAT("https://w3id.org/aidoc-ap/users/", ENCODE_FOR_URI(?name))) AS ?agent) }
+}

@@ -1,0 +1,29 @@
+# Rule: data profile rows (whylogs) get a profiling activity per dataset and data stage (D2).
+# Engine: row typed dqv:Metric, dqv:computedOn dataset, aidoc:dataScope data stage; no activity.
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?act a aidoc:ExplorationAndValidation , aidoc:AIActivity ;
+       rdfs:label ?label ;
+       prov:used ?d ;
+       aidoc-lc:producesMeasurement ?x .
+}
+WHERE {
+  ?x a dqv:Metric ; dqv:computedOn ?d .
+  ?d a aidoc:Dataset .
+  FILTER NOT EXISTS { ?d a aidoc:AIModel }
+  OPTIONAL { ?x aidoc:dataScope ?scope }
+  BIND (COALESCE(STR(?scope), "profile") AS ?stage)
+  BIND (IRI(CONCAT(REPLACE(STR(?d), "/data/", "/data-profiling/"), "/", ENCODE_FOR_URI(?stage))) AS ?act)
+  BIND (CONCAT("Profile of ", STRAFTER(STR(?d), "/data/"), " (", ?stage, ")") AS ?label)
+}

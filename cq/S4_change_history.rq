@@ -8,9 +8,11 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
 SELECT ?record ?activity ?activityType ?description ?reason ?author ?date WHERE {
-  ?activity aidoc-lc:producesChangeRecord ?record ;
-            a ?activityType .
-  FILTER (?activityType != aidoc:AIActivity && STRSTARTS(STR(?activityType), STR(aidoc:)))
+  ?activity aidoc-lc:producesChangeRecord ?record .
+  OPTIONAL {
+    ?activity a ?activityType .
+    FILTER (?activityType != aidoc:AIActivity && STRSTARTS(STR(?activityType), STR(aidoc:)))
+  }
   OPTIONAL { ?record dcterms:description ?description }
   OPTIONAL { ?record aidoc:reasonForChange ?reason }
   OPTIONAL { ?record prov:wasAttributedTo ?author }

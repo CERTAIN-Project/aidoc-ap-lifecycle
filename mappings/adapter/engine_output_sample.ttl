@@ -1,0 +1,139 @@
+@prefix aidoc: <https://w3id.org/aidoc-ap#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix e: <https://w3id.org/aidoc-ap/> .
+
+# Sample of engine output for the lifecycle stages that the materialised pilot graph
+# (ontop/input/knowledge_graph.rdf) does not contain: deployment, packaging, versioning, build
+# testing, monitoring, decommissioning, change logs, code, data acquisition and cleaning.
+#
+# The triples follow the triples maps of the engine mapping (ontop/input/aidoc-ap_r2rml.ttl,
+# commit b41ea27) exactly: same IRI templates, classes, predicates and literal forms, including
+# the patterns the adapter corrects. The values come from the engine's full lifecycle pilot script
+# (test_docker/test_full_lifecycle_pilot.py); identifiers and the drift value are illustrative.
+# Only asserted mapping triples are included, no inferred types. Used by `make adapter-check`.
+
+# ExperimentsTriplesMap, RunsTriplesMap, ModelArchitectureTriplesMap
+e:experiments\/2 a aidoc:ModelEngineering , mls:Experiment ;
+    rdfs:label "energy-load-xgb" ; dcterms:identifier "2" ;
+    aidoc:hasLifecycleStage e:lifecycle-stage\/active .
+
+e:runs\/pilotrun01 a aidoc:AIActivity , prov:Activity ;
+    rdfs:label "energy-load-training" ; dcterms:identifier "pilotrun01" ;
+    aidoc:version "b41ea271be92" ;
+    prov:wasInfluencedBy e:experiments\/2 .
+
+e:models\/pilotrun01\/energy-load-xgb-v1 a aidoc:AIModel , mls:Model ;
+    dcterms:identifier "energy-load-xgb-v1" ;
+    mls:hasObjective e:objectives\/reg%3Asquarederror ;
+    prov:wasGeneratedBy e:runs\/pilotrun01 .
+
+# RunsCodeTriplesMap, SoftwareVersioningTriplesMap
+e:runs\/pilotrun01\/code a aidoc:SoftwareImplementation , mls:Implementation ;
+    rdfs:label "test_full_lifecycle_pilot.py" ;
+    aidoc:version "b41ea271be92" ;
+    prov:wasGeneratedBy e:runs\/pilotrun01 .
+
+e:software-versioning\/pilotrun01 a aidoc:SoftwareVersioning ;
+    dcterms:identifier "pilotrun01" ;
+    aidoc:version "b41ea271be92" ;
+    prov:wasInfluencedBy e:runs\/pilotrun01\/code .
+
+# DataAcquisitionActivityTriplesMap, DataCleaningProcedureTriplesMap (technique_name is a
+# PostgreSQL array, rendered as text by the mapping)
+e:data-acquisition\/pilotrun01\/opsd a aidoc:DataAcquisitionActivity , aidoc:AIActivity ;
+    rdfs:label "Data Acquisition for opsd" ;
+    aidoc:dataCollectionMethod "Download of the published CSV file from Open Power System Data" ;
+    dcterms:source "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min" ;
+    prov:generated e:data\/pilotrun01\/opsd .
+
+e:data\/pilotrun01\/opsd a aidoc:Dataset , mls:Dataset ;
+    dcterms:identifier "opsd" ; aidoc:dataScope "raw" .
+
+e:data-cleaning\/pilotrun01\/opsd a aidoc:DataCleaningProcedure , aidoc:AIActivity ;
+    rdfs:label "Data Cleaning for opsd" ;
+    aidoc:dataCollectionMethod "{clean_missing_values,remove_outliers_iqr}" ;
+    prov:used e:data\/pilotrun01\/opsd .
+
+# ModelEvaluationTriplesMap and ModelMetricsTriplesMap (stage 'evaluation')
+e:model-evaluation\/pilotrun01\/energy-load-xgb-v1 a aidoc:ModelEvaluation , aidoc:AIActivity ;
+    rdfs:label "Model Evaluation for energy-load-xgb-v1" ;
+    prov:used e:models\/pilotrun01\/energy-load-xgb-v1 .
+
+e:models\/pilotrun01\/energy-load-xgb-v1\/metric\/mse\/step\/0 a aidoc:PerformanceMetric , dqv:Metric ;
+    rdfs:label "mse" ; rdf:value "12966.089035638173" ; schema:step "0"^^xsd:integer ;
+    aidoc:dataScope "evaluation" ;
+    dqv:computedOn e:models\/pilotrun01\/energy-load-xgb-v1 .
+
+# ModelDeployedTriplesMap
+e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot a aidoc:Deployment , aidoc:AIActivity ;
+    dcterms:identifier "dep-energy-xgb-pilot" ;
+    aidoc:version "1" ;
+    schema:url "http://energy-xgb.example.org:8080/predict" ;
+    aidoc:hasLifecycleStage e:lifecycle-stage\/Production ;
+    prov:wasInfluencedBy e:experiments\/2 ;
+    prov:used e:models\/pilotrun01\/energy-load-xgb-v1 .
+
+# ModelVersioningTriplesMap
+e:model-versioning\/pilotrun01\/energy-load-xgb-v1 a aidoc:ModelVersioning ;
+    dcterms:identifier "energy-load-xgb-v1" ;
+    aidoc:version "1" ;
+    prov:wasInfluencedBy e:models\/pilotrun01\/energy-load-xgb-v1 .
+
+# ModelPackagingTriplesMap
+e:model-packaging\/2\/energy-load-xgb-v1\/pkg-01 a aidoc:ModelPackaging , aidoc:AIActivity ;
+    dcterms:identifier "pkg-01" ;
+    dcterms:format "mlflow_model" ;
+    rdfs:comment "{\"base_image\": \"python:3.11-slim\", \"cpu\": \"2\", \"memory\": \"4GB\", \"registry\": \"docker.io/certain/energy-xgb\", \"port\": 8080}" ;
+    prov:wasInfluencedBy e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+# BuildAndIntegrationTestingTriplesMap (build_status, test_type and test_results are not mapped)
+e:testing\/2\/dep-energy-xgb-pilot\/energy-load-xgb-v1\/test-01 a aidoc:BuildAndIntegrationTesting , aidoc:AIActivity ;
+    dcterms:identifier "test-01" ;
+    rdfs:comment "Docker image built successfully. Smoke test: POST /predict returned HTTP 200. All 5 integration tests passed." ;
+    prov:wasInfluencedBy e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+# RuntimeEnvironmentTriplesMap and PostMarketPerformanceEvaluationActivityTriplesMap
+e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot\/runtime a aidoc:ComputationalResource ;
+    rdfs:label "energy-xgb serving container" ;
+    aidoc:resourceConfiguration "2" ;
+    prov:wasUsedBy e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+e:post-market-performance\/2\/dep-energy-xgb-pilot\/energy-load-xgb-v1 a aidoc:PostMarketPerformanceEvaluationActivity , aidoc:AIActivity ;
+    rdfs:label "Post-Market Performance Evaluation for energy-load-xgb-v1" ;
+    prov:wasInfluencedBy e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+# DriftMetricsTriplesMap and PostMarketMonitoringActivityTriplesMap
+e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot\/drift\/1777593600 a aidoc:PerformanceMetric ;
+    rdfs:label "Drift Metric" ; rdf:value "0"^^xsd:integer ;
+    dcterms:created "2026-05-01T00:00:00Z"^^xsd:dateTime ;
+    dqv:computedOn e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+e:post-market-monitoring\/2\/dep-energy-xgb-pilot\/energy-load-xgb-v1 a aidoc:PostMarketMonitoringActivity , aidoc:AIActivity ;
+    rdfs:label "Post-Market Monitoring for energy-load-xgb-v1" ;
+    prov:endedAtTime "2026-05-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasInfluencedBy e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+# DecommissioningTriplesMap (reason and decomissioning_actions are not mapped)
+e:decommissioning\/2\/energy-load-xgb-v1\/decom-01 a aidoc:Decommissioning , aidoc:AIActivity ;
+    dcterms:identifier "decom-01" ;
+    dcterms:date "2026-09-15T09:00:00Z"^^xsd:dateTime ;
+    rdfs:comment "Endpoint traffic was drained over 24h using a canary rollout." ;
+    prov:wasInfluencedBy e:deployments\/2\/energy-load-xgb-v1\/dep-energy-xgb-pilot .
+
+# ChangeLogTriplesMap and ChangeRecordTriplesMap (changed_by is a plain string)
+e:changelog\/pilotrun01 a aidoc:ChangeLog , prov:Activity ;
+    prov:wasInfluencedBy e:runs\/pilotrun01 ;
+    aidoc:hasChangeRecord e:changelog\/pilotrun01\/log-01 .
+
+e:changelog\/pilotrun01\/log-01 a aidoc:ChangeRecord ;
+    dcterms:identifier "log-01" ;
+    dcterms:description "Model energy-load-xgb-v1 (deployment dep-energy-xgb-pilot) decommissioned. Replaced by energy-load-xgb-v2." ;
+    prov:wasAssociatedWith "ml-team" ;
+    prov:endedAtTime "2026-09-15T09:30:00Z"^^xsd:dateTime .

@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Merge the engine R2RML mapping with the proposal in mappings/ and check the result.
+"""Merge the engine R2RML mapping with the overlay in mappings/r2rml/ and check the result.
 
-Merge: a triples map of mappings/aidoc-lc_r2rml_proposal.ttl replaces the engine triples map
+The engine is not changed: the merged mapping is this repository's own mapping, run by a separate
+Ontop endpoint with read access to the engine database (mappings/r2rml/ontop/).
+
+Merge: a triples map of mappings/r2rml/aidoc-lc_overlay.ttl replaces the engine triples map
 with the same name (fragment after '#'); new names are added; the names listed in
-mappings/removed_triples_maps.txt are removed. Output: reports/aidoc-ap_r2rml_merged.ttl.
+mappings/r2rml/removed_triples_maps.txt are removed. Output: reports/aidoc-ap_r2rml_merged.ttl.
 
-Checks of the proposal (errors, exit code 1):
+Checks of the overlay (errors, exit code 1):
   - every triples map has a logical table and a subject map; replaced and removed names exist
     in the engine mapping
   - SQL: tables in FROM/JOIN exist in data_api/app/models.py, qualified columns (alias.column)
@@ -21,7 +24,7 @@ Checks of the merged mapping (reported; errors with --strict):
   - range conflicts: an IRI object whose template is the subject template of a typed triples map,
     and whose classes are not below the declared rdfs:range of the predicate
 
-  python3 scripts/mapping_proposal.py
+  python3 scripts/r2rml_overlay.py
 """
 from __future__ import annotations
 
@@ -110,20 +113,20 @@ def sql_tables(sql: str) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--engine-mapping", default=str(ENGINE / "ontop" / "input" / "aidoc-ap_r2rml.ttl"))
-    ap.add_argument("--proposal", default=str(ROOT / "mappings" / "aidoc-lc_r2rml_proposal.ttl"))
-    ap.add_argument("--removed", default=str(ROOT / "mappings" / "removed_triples_maps.txt"))
+    ap.add_argument("--overlay", default=str(ROOT / "mappings" / "r2rml" / "aidoc-lc_overlay.ttl"))
+    ap.add_argument("--removed", default=str(ROOT / "mappings" / "r2rml" / "removed_triples_maps.txt"))
     ap.add_argument("--out", default=str(REPORTS / "aidoc-ap_r2rml_merged.ttl"))
     ap.add_argument("--strict", action="store_true", help="domain and range conflicts are errors")
     args = ap.parse_args()
 
-    engine, proposal = Graph().parse(args.engine_mapping), Graph().parse(args.proposal)
+    engine, overlay = Graph().parse(args.engine_mapping), Graph().parse(args.overlay)
     tables = {t: {c for c, _ in cols} for t, cols in engine_tables(ENGINE / "data_api" / "app" / "models.py").items()}
     module = load_graph([MODULE_TTL])
     kb = load_graph([CORE_TTL, MODULE_TTL]) + reference_graph()
     errors, warnings = [], []
 
     e_tms = {name_of(tm): tm for tm in engine.subjects(RR.subjectMap, None)}
-    p_tms = {name_of(tm): tm for tm in proposal.subjects(RR.subjectMap, None)}
+    p_tms = {name_of(tm): tm for tm in overlay.subjects(RR.subjectMap, None)}
     removed = [ln.split("#")[0].strip() for ln in open(args.removed, encoding="utf-8")]
     removed = [r for r in removed if r]
     for r in removed:
@@ -132,23 +135,23 @@ def main() -> int:
 
     # ---- merge
     merged = Graph()
-    for prefix, ns in list(engine.namespaces()) + list(proposal.namespaces()):
+    for prefix, ns in list(engine.namespaces()) + list(overlay.namespaces()):
         merged.bind(prefix, ns, override=False)
     for name, tm in e_tms.items():
         if name not in p_tms and name not in removed:
             for t in closure(engine, tm):
                 merged.add(t)
     for tm in p_tms.values():
-        for t in closure(proposal, tm):
+        for t in closure(overlay, tm):
             merged.add(t)
-    # join conditions point to the proposal's IRIs; rewrite references to engine IRIs by name
+    # join conditions point to the overlay's IRIs; rewrite references to engine IRIs by name
     m_tms = {name_of(tm): tm for tm in merged.subjects(RR.subjectMap, None)}
     for s, p, o in list(merged.triples((None, RR.parentTriplesMap, None))):
         if name_of(o) in m_tms and o != m_tms[name_of(o)]:
             merged.remove((s, p, o))
             merged.add((s, p, m_tms[name_of(o)]))
 
-    # ---- per triples map checks on the proposal
+    # ---- per triples map checks on the overlay
     def logical(g, tm):
         lt = g.value(tm, RR.logicalTable)
         return (str(g.value(lt, RR.tableName) or "").strip('"') or None), (str(g.value(lt, RR.sqlQuery) or "") or None)
@@ -174,8 +177,8 @@ def main() -> int:
     replaced = sorted(n for n in p_tms if n in e_tms)
     added = sorted(n for n in p_tms if n not in e_tms)
     for name, tm in sorted(p_tms.items()):
-        sm = proposal.value(tm, RR.subjectMap)
-        tname, sql = logical(proposal, tm)
+        sm = overlay.value(tm, RR.subjectMap)
+        tname, sql = logical(overlay, tm)
         if sm is None or (tname is None and sql is None):
             errors.append(f"{name}: needs rr:logicalTable and rr:subjectMap")
             continue
@@ -189,26 +192,26 @@ def main() -> int:
             for alias, col in re.findall(r"\b([A-Za-z_]\w*)\.\"?(\w+)\"?", sql):
                 if alias in aliases and aliases[alias] in tables and col not in tables[aliases[alias]]:
                     errors.append(f"{name}: column {alias}.{col} does not exist in {aliases[alias]}")
-        out = outputs(proposal, tm)
-        for col in sorted(used_columns(proposal, tm) - out):
+        out = outputs(overlay, tm)
+        for col in sorted(used_columns(overlay, tm) - out):
             errors.append(f"{name}: column {col} is used but not produced by the logical table (produced: {sorted(out)})")
-        for pom in proposal.objects(tm, RR.predicateObjectMap):
-            for om in proposal.objects(pom, RR.objectMap):
-                ptm = proposal.value(om, RR.parentTriplesMap)
+        for pom in overlay.objects(tm, RR.predicateObjectMap):
+            for om in overlay.objects(pom, RR.objectMap):
+                ptm = overlay.value(om, RR.parentTriplesMap)
                 if ptm is not None:
                     parent_out = outputs(merged, m_tms.get(name_of(ptm), ptm))
-                    for jc in proposal.objects(om, RR.joinCondition):
-                        if str(proposal.value(jc, RR.parent)) not in parent_out:
-                            errors.append(f"{name}: join parent column {proposal.value(jc, RR.parent)} not produced by {name_of(ptm)}")
-                tpl = proposal.value(om, RR.template)
+                    for jc in overlay.objects(om, RR.joinCondition):
+                        if str(overlay.value(jc, RR.parent)) not in parent_out:
+                            errors.append(f"{name}: join parent column {overlay.value(jc, RR.parent)} not produced by {name_of(ptm)}")
+                tpl = overlay.value(om, RR.template)
                 if tpl and str(tpl).startswith(LC_NS) and sql:
                     col = re.findall(r"\{(\w+)\}", str(tpl))[0]
                     m = re.search(r"CASE(?:(?!\bEND\b).)*?END\s+AS\s+" + col + r"\b", sql, re.S | re.I)
                     for concept in re.findall(r"THEN\s+'(\w+)'", m.group(0) if m else ""):
                         if (URIRef(LC_NS + concept), None, None) not in module:
                             errors.append(f"{name}: concept aidoc-lc:{concept} is not declared in the module")
-        terms = set(proposal.objects(sm, RR["class"])) | {p for pom in proposal.objects(tm, RR.predicateObjectMap)
-                                                         for p in proposal.objects(pom, RR.predicate)}
+        terms = set(overlay.objects(sm, RR["class"])) | {p for pom in overlay.objects(tm, RR.predicateObjectMap)
+                                                         for p in overlay.objects(pom, RR.predicate)}
         for t in terms:
             if not str(t).startswith(STANDARD_NS) and (t, None, None) not in kb:
                 errors.append(f"{name}: {qname(t)} is declared nowhere")
@@ -251,7 +254,7 @@ def main() -> int:
 
     REPORTS.mkdir(exist_ok=True)
     merged.serialize(destination=args.out, format="turtle")
-    print(f"proposal: {len(replaced)} replaced, {len(added)} added, {len(removed)} removed triples maps; "
+    print(f"overlay: {len(replaced)} replaced, {len(added)} added, {len(removed)} removed triples maps; "
           f"merged mapping: {len(m_tms)} triples maps -> {args.out}")
     for c in sorted(set(conflicts)):
         (errors if args.strict else warnings).append(c)

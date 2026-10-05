@@ -1,0 +1,19 @@
+# Rule: the source version of a run (aidoc:version on the activity) is the version of its code.
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT { ?code a aidoc:SoftwareImplementation ; aidoc:version ?v . }
+WHERE {
+  ?run a aidoc:AIActivity ; aidoc:version ?v .
+  FILTER (STRSTARTS(STR(?run), "https://w3id.org/aidoc-ap/runs/") && STR(?v) != "")
+  BIND (IRI(CONCAT(STR(?run), "/code")) AS ?code)
+}

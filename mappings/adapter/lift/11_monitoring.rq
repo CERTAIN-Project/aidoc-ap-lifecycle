@@ -1,0 +1,28 @@
+# Rule: post-market monitoring monitors the deployed model; drift rows become its measurements of the model (O2).
+# Engine: monitoring prov:wasInfluencedBy deployment; drift row (label 'Drift Metric') dqv:computedOn deployment.
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX airo: <https://w3id.org/airo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX mls: <http://www.w3.org/ns/mls#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?mon aidoc-lc:monitors ?m .
+  ?mon aidoc-lc:producesMeasurement ?x .
+  ?x a dqv:QualityMeasurement , prov:Entity ;
+     dqv:isMeasurementOf <https://w3id.org/aidoc-ap/metrics/drift> ;
+     dqv:value ?v ;
+     dqv:computedOn ?m .
+  <https://w3id.org/aidoc-ap/metrics/drift> a dqv:Metric , aidoc:PerformanceMetric ; rdfs:label "drift" .
+}
+WHERE {
+  ?mon a aidoc:PostMarketMonitoringActivity ; prov:wasInfluencedBy ?dep .
+  ?dep a aidoc:Deployment ; prov:used ?m .
+  OPTIONAL { ?x dqv:computedOn ?dep ; rdfs:label "Drift Metric" ; rdf:value ?v . }
+}

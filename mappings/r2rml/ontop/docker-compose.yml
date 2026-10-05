@@ -1,0 +1,48 @@
+# Separate Ontop endpoint for the lifecycle view of the Semantic MLOps Engine (path b in
+# mappings/README.md). It reads the engine database with its own read-only credentials and does
+# not change the engine. Prepare the input with `make overlay-build` (writes reports/ontop/) and
+# copy lifecycle.properties.example to reports/ontop/lifecycle.properties with the credentials.
+#
+#   docker compose -f mappings/r2rml/ontop/docker-compose.yml up -d
+#
+# The service joins the engine's Docker network to reach its database host; adjust the network
+# name and the JDBC URL for other deployments.
+
+services:
+  download_jdbc:
+    image: curlimages/curl:latest
+    user: root
+    volumes:
+      - jdbc_driver:/jdbc
+    command: >
+      sh -c '[ -f /jdbc/postgresql-42.7.10.jar ] ||
+             curl -L -o /jdbc/postgresql-42.7.10.jar https://jdbc.postgresql.org/download/postgresql-42.7.10.jar'
+
+  ontop-lifecycle:
+    image: ontop/ontop:5.5.0
+    depends_on:
+      download_jdbc:
+        condition: service_completed_successfully
+    networks:
+      - engine
+    ports:
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - ../../../reports/ontop:/opt/ontop/input:ro
+      - jdbc_driver:/opt/ontop/jdbc
+    command: >
+      /opt/ontop/ontop endpoint
+      --ontology /opt/ontop/input/framework.ttl
+      --mapping /opt/ontop/input/mapping.ttl
+      --properties /opt/ontop/input/lifecycle.properties
+      --lazy
+      --port 8080
+    restart: unless-stopped
+
+networks:
+  engine:
+    external: true
+    name: certain_library_default
+
+volumes:
+  jdbc_driver:

@@ -1,0 +1,6 @@
+# Ontop connection to the engine database for the lifecycle view (path b in mappings/README.md).
+# Copy to reports/ontop/lifecycle.properties (not tracked) and use a read-only database account.
+jdbc.url=jdbc:postgresql://certain_databases:5432/certain_db
+jdbc.driver=org.postgresql.Driver
+jdbc.user=lifecycle_reader
+jdbc.password=CHANGE_ME
