@@ -1,0 +1,17 @@
+# CQ: Which code revision did each software versioning activity record?
+# Stage: S4
+# Terms: aidoc-lc:versionsSoftware
+
+PREFIX aidoc: <https://w3id.org/aidoc-ap#>
+PREFIX aidoc-lc: <https://w3id.org/aidoc-ap/lifecycle#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?versioning ?software ?name ?revision ?previous WHERE {
+  ?versioning a aidoc:SoftwareVersioning ;
+              aidoc-lc:versionsSoftware ?software .
+  OPTIONAL { ?software rdfs:label ?name }
+  OPTIONAL { ?software aidoc:version ?revision }
+  OPTIONAL { ?software prov:wasRevisionOf ?previous }
+}
+ORDER BY ?software

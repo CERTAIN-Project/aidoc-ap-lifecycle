@@ -121,6 +121,16 @@
     rdfs:comment "Relates a model packaging activity to the format in which it stores the model for deployment, such as an MLflow model, ONNX or a container image. Values are concepts, for example from the scheme aidoc-lc:PackagingFormats."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> .
 
+###  https://w3id.org/aidoc-ap/lifecycle#producesChangeRecord
+:producesChangeRecord rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:generated ;
+    rdfs:domain aidoc:AIActivity ;
+    rdfs:range aidoc:ChangeRecord ;
+    rdfs:label "produces change record"@en ;
+    rdfs:comment "Relates a lifecycle activity to the change record that documents the change it made to the AI system or its components."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(6)" .
+
 ###  https://w3id.org/aidoc-ap/lifecycle#producesMeasurement
 :producesMeasurement rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf prov:generated ;
@@ -199,6 +209,17 @@
     rdfs:range aidoc:AIModel ;
     rdfs:label "versions model"@en ;
     rdfs:comment "Relates a model versioning activity to the AI model version that it registers or whose status it changes."@en ;
+    rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
+    dcterms:source "EU AI Act 2024/1689, Annex IV(1)(c)" .
+
+###  https://w3id.org/aidoc-ap/lifecycle#versionsSoftware
+:versionsSoftware rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    rdfs:domain aidoc:SoftwareVersioning ;
+    rdfs:range [ rdf:type owl:Class ;
+                  owl:unionOf ( aidoc:SoftwareImplementation aidoc:SoftwareComponent ) ] ;
+    rdfs:label "versions software"@en ;
+    rdfs:comment "Relates a software versioning activity to the software implementation or component revision that it records, for example a commit in a version control system."@en ;
     rdfs:isDefinedBy <https://w3id.org/aidoc-ap/lifecycle#> ;
     dcterms:source "EU AI Act 2024/1689, Annex IV(1)(c)" .
 
