@@ -13,10 +13,9 @@
 
 # Alignment proposals for the AIDOC-AP Lifecycle Extension.
 #
-# Status: proposed, not curated. Before publication each mapping goes through the curation
-# used for the core alignments (three domain experts, 2-of-3 majority vote, joint adjudication
-# of splits). alignments/proposed-reified.ttl holds the same mappings in the record format of
-# the core alignments; regenerate it with `make alignments`.
+# Status: proposed and reviewed by the maintainer of the module; no expert curation as for the
+# core alignments. alignments/proposed-reified.ttl holds the same mappings in the record format
+# of the core alignments; regenerate it with `make alignments`.
 #
 # Format: one mapping per line, followed by its rationale as a comment. Subjects are module
 # terms; targets are terms of the AIDOC-AP core or of the vocabularies vendored with it.
