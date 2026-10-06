@@ -16,7 +16,7 @@
 
   <rect x="30" y="50" width="400" height="56" rx="8" fill="#ffffff" stroke="#6b7785" stroke-dasharray="5 4"/>
   <text x="230" y="74" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Legal and Ethical Extension</text>
-  <text x="230" y="93" text-anchor="middle" font-size="11" fill="#4a5868">planned, separate module (KPI 1.2)</text>
+  <text x="230" y="93" text-anchor="middle" font-size="11" fill="#4a5868">separate module</text>
 
   <rect x="30" y="160" width="400" height="76" rx="8" fill="#eef8f7" stroke="#0a7373" stroke-width="2"/>
   <text x="230" y="186" text-anchor="middle" font-size="14" font-weight="700" fill="#0a7373">AIDOC-AP Lifecycle Extension</text>
@@ -40,12 +40,9 @@
     <text x="238" y="137">may import</text>
   </g>
 
-  <text x="30" y="404" font-size="11" fill="#4a5868">Coverage of the 18 lifecycle stages (KPI 1.1):</text>
-  <text x="30" y="422" font-size="11" fill="#4a5868">core 0.574 · core and Lifecycle Extension 0.982</text>
-
   <!-- engine -->
   <rect x="500" y="22" width="610" height="118" rx="10" fill="#fafbfc" stroke="#6b7785" stroke-dasharray="5 4"/>
-  <text x="516" y="44" font-size="12" font-weight="700" fill="#4a5868" letter-spacing="0.5">SEMANTIC MLOPS ENGINE · NOT CHANGED</text>
+  <text x="516" y="44" font-size="12" font-weight="700" fill="#4a5868" letter-spacing="0.5">SEMANTIC MLOPS ENGINE</text>
 
   <rect x="516" y="62" width="170" height="60" rx="8" fill="#f2f3f5" stroke="#3b4652"/>
   <text x="601" y="87" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Metadata database</text>
@@ -75,7 +72,7 @@
 
   <rect x="516" y="330" width="578" height="64" rx="8" fill="#eef8f7" stroke="#0a7373" stroke-width="2"/>
   <text x="805" y="356" text-anchor="middle" font-size="13" font-weight="700" fill="#0a7373">Knowledge graph with core and Lifecycle Extension terms</text>
-  <text x="805" y="376" text-anchor="middle" font-size="11" fill="#4a5868">competency queries answered over the same rows: (b) 17 of 18, (a) 14 of 18</text>
+  <text x="805" y="376" text-anchor="middle" font-size="11" fill="#4a5868">competency queries answered</text>
 
   <g stroke="#0a7373" stroke-width="1.6" fill="none" marker-end="url(#acc)">
     <line x1="601" y1="122" x2="601" y2="204"/>
