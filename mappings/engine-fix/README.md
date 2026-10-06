@@ -41,6 +41,6 @@ git checkout -b fix/aidoc-ap-mapping origin/main
 git am /path/to/aidoc-ap-lifecycle/mappings/engine-fix/*.patch
 ```
 
-Pushing the branch and opening a pull request is up to the maintainers and the engine developers.
+The patches are submitted to the engine as pull request [CERTAIN-Project/Semantic_MLOps_engine#2](https://github.com/CERTAIN-Project/Semantic_MLOps_engine/pull/2) (branch `ontop-fix`), under review.
 
 Compatibility with the overlay of `mappings/r2rml/`: the triples maps added by the patches have the same names as the corresponding triples maps of the overlay, which replaces them. Only `RunCodeVersionTriplesMap` has no counterpart; it states the same version as the overlay's `RunSourceCodeTriplesMap`.
