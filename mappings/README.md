@@ -1,6 +1,6 @@
 # Using the Lifecycle Extension with the Semantic MLOps Engine
 
-The Semantic MLOps Engine maps its database to the AIDOC-AP core with R2RML and publishes the result through Ontop. The engine itself is not changed. This folder offers two ways to bring its metadata to the terms of the Lifecycle Extension:
+The Semantic MLOps Engine maps its database to the AIDOC-AP core with R2RML and publishes the result through Ontop. This folder offers two ways to bring its metadata to the terms of the Lifecycle Extension without changing the engine, and a small set of fixes for the engine's own mapping (`engine-fix/`):
 
 | | (a) Adapter over the engine's RDF output | (b) R2RML overlay with its own Ontop endpoint |
 |---|---|---|
@@ -9,7 +9,7 @@ The Semantic MLOps Engine maps its database to the AIDOC-AP core with R2RML and 
 | Recovers | everything the engine already maps, corrected and lifted to module terms | in addition the columns the engine does not map |
 | Check | `make adapter-check` | `make overlay-check` |
 
-Both paths are based on the engine at commit b41ea27.
+Both paths are based on the engine at commit b41ea27. `make e2e` tests them end to end (section "End-to-end test").
 
 ## (a) Adapter over the RDF output
 
@@ -57,9 +57,26 @@ The ontology given to Ontop is core v1.2 plus the module (`make merged`). Ontop 
 | Columns not mapped | 48 | 23 |
 | Columns mapped only with generic predicates | 59 | 48 |
 
-These checks are static. The SQL has not run against PostgreSQL and the merged mapping has not run in Ontop; the first deployment with database access is that test.
+The static checks cannot see which SQL Ontop's parser accepts. The end-to-end test found three constructs that Ontop 5.5 handles differently from PostgreSQL: CASE expressions over joined, qualified columns and UNION branches without an enclosing SELECT lose their column aliases, and a CAST to date is not applied; the overlay avoids them.
 
 Changed IRI templates (overlay only): model versioning records `model-versioning/{run_id}/{model_id}/{deployment_id}`; data profile measurements `data/{run_id}/{data_id}/metric/{stage}/{key}`; weight statistics `.../weights/{layer_name}/step/{step}/{statistic}`; data technique parameters `data/{run_id}/{data_id}/technique/{technique_name}/parameter/{name}`. New resources use `hyperparameters/`, `metrics/`, `dependencies/`, `software-development/`, `data-profiling/`, `data-processing/`, `tokenization/` and `tokenization-stats/` under `https://w3id.org/aidoc-ap/`.
+
+## End-to-end test
+
+`make e2e` (needs Docker) creates the engine schema in PostgreSQL 13 from the engine's models, loads `r2rml/e2e/pilot_rows.json` (rows of the energy pilot in all relevant tables), materialises the engine's own mapping and the merged overlay mapping with Ontop 5.5.0, runs the adapter on the engine output and the competency queries over both results. On the same rows:
+
+| | Engine output | (a) Adapter | (b) Overlay |
+|---|---|---|---|
+| Resources typed both prov:Activity and prov:Entity | 10 | 0 | 0 |
+| Triples with predicates declared nowhere | 3 | 0 | 0 |
+| Domain violations of core and module predicates | 1 | 0 | 0 |
+| Competency queries answered (of 18) | - | 14 | 17 |
+
+The overlay answers every query that the rows have data for; re-evaluation (O3) has none. The adapter misses in addition augmentation and tokenization, which the engine does not map, and the evaluation query, because the engine creates an evaluation activity only for metrics with the stage "evaluation".
+
+## Fixes for the engine mapping
+
+`engine-fix/` holds five patches against the engine for errors in its mapping to the core that can be fixed without a database migration and without the Lifecycle Extension: a json column that stops materialisation, the outdated core version, an undeclared PROV property, activities and entities mixed up, and core properties used outside their domain. With them the engine answers 31 instead of 29 of the core's 50 competency questions on the same rows, and none is lost. See `engine-fix/README.md`.
 
 ## Limits of the engine data
 

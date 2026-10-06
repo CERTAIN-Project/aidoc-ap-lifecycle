@@ -119,9 +119,10 @@
 <#ModelArchitectureSettingsTriplesMap>
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
-        SELECT run_id, model_id, 'loss_function' AS hp_key, loss_function AS hp_value FROM model_architecture WHERE loss_function IS NOT NULL
-        UNION ALL
-        SELECT run_id, model_id, 'optimizer' AS hp_key, optimizer AS hp_value FROM model_architecture WHERE optimizer IS NOT NULL
+        SELECT u.run_id, u.model_id, u.hp_key, u.hp_value
+        FROM (SELECT run_id, model_id, 'loss_function' AS hp_key, loss_function AS hp_value FROM model_architecture WHERE loss_function IS NOT NULL
+              UNION ALL
+              SELECT run_id, model_id, 'optimizer' AS hp_key, optimizer AS hp_value FROM model_architecture WHERE optimizer IS NOT NULL) u
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/models/{run_id}/{model_id}/hyperparameter/{hp_key}" ;
                     rr:class mls:HyperParameterSetting ] ;
@@ -218,7 +219,7 @@
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT run_id, model_id, key, step,
-               CASE WHEN value ~ '^[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?$' THEN value END AS value_num,
+               CASE WHEN value SIMILAR TO '[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?' THEN value END AS value_num,
                to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
         FROM model_metrics
     """ ] ;
@@ -236,7 +237,7 @@
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT run_id, model_id, key, step,
-               CASE WHEN value ~ '^[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?$' THEN value END AS value_num,
+               CASE WHEN value SIMILAR TO '[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?' THEN value END AS value_num,
                to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
         FROM last_model_metrics
     """ ] ;
@@ -254,13 +255,14 @@
 <#WeightDistributionTriplesMap>
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
-        SELECT run_id, model_id, layer_name, step, 'weight_mean' AS stat_key, CAST(mean AS text) AS stat_value,
-               to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
-        FROM weight_distribution WHERE mean IS NOT NULL AND NOT COALESCE("is_NaN", false)
-        UNION ALL
-        SELECT run_id, model_id, layer_name, step, 'weight_std' AS stat_key, CAST(std AS text) AS stat_value,
-               to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
-        FROM weight_distribution WHERE std IS NOT NULL AND NOT COALESCE("is_NaN", false)
+        SELECT u.run_id, u.model_id, u.layer_name, u.step, u.stat_key, u.stat_value, u.ts
+        FROM (SELECT run_id, model_id, layer_name, step, 'weight_mean' AS stat_key, CAST(mean AS text) AS stat_value,
+                     to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
+              FROM weight_distribution WHERE mean IS NOT NULL AND NOT COALESCE("is_NaN", false)
+              UNION ALL
+              SELECT run_id, model_id, layer_name, step, 'weight_std' AS stat_key, CAST(std AS text) AS stat_value,
+                     to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
+              FROM weight_distribution WHERE std IS NOT NULL AND NOT COALESCE("is_NaN", false)) u
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/models/{run_id}/{model_id}/weights/{layer_name}/step/{step}/{stat_key}" ;
                     rr:class dqv:QualityMeasurement , prov:Entity ] ;
@@ -304,18 +306,19 @@
 <#ModelPackagingTriplesMap>
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
-        SELECT mp.packaging_id, mp.experiment_id, mp.deployment_id, mp.model_id, mp.packaging_format,
-               mp.containerization_details, md.run_id,
-               CASE LOWER(mp.packaging_format)
-                    WHEN 'mlflow_model' THEN 'MLflowModelFormat' WHEN 'mlflow' THEN 'MLflowModelFormat'
-                    WHEN 'onnx' THEN 'ONNXFormat'
-                    WHEN 'torchscript' THEN 'TorchScriptFormat'
-                    WHEN 'savedmodel' THEN 'SavedModelFormat' WHEN 'tf_savedmodel' THEN 'SavedModelFormat'
-                    WHEN 'pickle' THEN 'PickleFormat' WHEN 'joblib' THEN 'PickleFormat'
-                    WHEN 'docker' THEN 'ContainerImageFormat' WHEN 'container_image' THEN 'ContainerImageFormat'
-               END AS format_concept
-        FROM model_packaging mp
-        LEFT JOIN model_deployed md ON md.model_id = mp.model_id AND md.deployment_id = mp.deployment_id
+        SELECT p.packaging_id, p.experiment_id, p.deployment_id, p.model_id, p.packaging_format,
+               p.containerization_details, p.format_concept, md.run_id
+        FROM (SELECT packaging_id, experiment_id, deployment_id, model_id, packaging_format, containerization_details,
+                     CASE LOWER(packaging_format)
+                          WHEN 'mlflow_model' THEN 'MLflowModelFormat' WHEN 'mlflow' THEN 'MLflowModelFormat'
+                          WHEN 'onnx' THEN 'ONNXFormat'
+                          WHEN 'torchscript' THEN 'TorchScriptFormat'
+                          WHEN 'savedmodel' THEN 'SavedModelFormat' WHEN 'tf_savedmodel' THEN 'SavedModelFormat'
+                          WHEN 'pickle' THEN 'PickleFormat' WHEN 'joblib' THEN 'PickleFormat'
+                          WHEN 'docker' THEN 'ContainerImageFormat' WHEN 'container_image' THEN 'ContainerImageFormat'
+                     END AS format_concept
+              FROM model_packaging) p
+        LEFT JOIN model_deployed md ON md.model_id = p.model_id AND md.deployment_id = p.deployment_id
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/model-packaging/{experiment_id}/{model_id}/{packaging_id}" ;
                     rr:class aidoc:ModelPackaging , aidoc:AIActivity ] ;
@@ -478,7 +481,7 @@
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT run_id, log_id, change_description, changed_by,
-               CAST(to_timestamp(CASE WHEN change_timestamp > 10000000000 THEN change_timestamp / 1000.0 ELSE change_timestamp END) AS date) AS change_date
+               to_char(to_timestamp(CASE WHEN change_timestamp > 10000000000 THEN change_timestamp / 1000.0 ELSE change_timestamp END), 'YYYY-MM-DD') AS change_date
         FROM change_logs
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/changelog/{run_id}/{log_id}" ; rr:class aidoc:ChangeRecord ] ;
@@ -513,19 +516,24 @@
 <#BuildAndIntegrationTestingTriplesMap>
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
-        SELECT bt.experiment_id, bt.deployment_id, bt.model_id, bt.test_id, bt.build_logs, md.run_id,
-               to_timestamp(CASE WHEN bt.build_timestamp > 10000000000 THEN bt.build_timestamp / 1000.0 ELSE bt.build_timestamp END) AS build_ts,
-               CASE WHEN LOWER(bt.build_status) IN ('success', 'succeeded', 'passed', 'ok') THEN 'BuildSucceeded'
-                    WHEN LOWER(bt.build_status) IN ('failure', 'failed', 'error') THEN 'BuildFailed'
-                    WHEN LOWER(bt.build_status) IN ('cancelled', 'canceled', 'aborted') THEN 'BuildCancelled'
-               END AS status_concept,
-               CASE WHEN LOWER(bt.test_type) IN ('unit', 'component') THEN 'ComponentTestLevel'
-                    WHEN LOWER(bt.test_type) = 'integration' THEN 'IntegrationTestLevel'
-                    WHEN LOWER(bt.test_type) = 'system' THEN 'SystemTestLevel'
-                    WHEN LOWER(bt.test_type) = 'acceptance' THEN 'AcceptanceTestLevel'
-               END AS level_concept
-        FROM build_and_integration_testing bt
-        LEFT JOIN model_deployed md ON md.model_id = bt.model_id AND md.deployment_id = bt.deployment_id
+        SELECT b.experiment_id, b.deployment_id, b.model_id, b.test_id, b.build_logs, b.build_ts,
+               b.status_concept, b.level_concept, md.run_id
+        FROM (SELECT experiment_id, deployment_id, model_id, test_id, build_logs,
+                     to_timestamp(CASE WHEN build_timestamp > 10000000000 THEN build_timestamp / 1000.0 ELSE build_timestamp END) AS build_ts,
+                     CASE LOWER(build_status)
+                          WHEN 'success' THEN 'BuildSucceeded' WHEN 'succeeded' THEN 'BuildSucceeded'
+                          WHEN 'passed' THEN 'BuildSucceeded' WHEN 'ok' THEN 'BuildSucceeded'
+                          WHEN 'failure' THEN 'BuildFailed' WHEN 'failed' THEN 'BuildFailed' WHEN 'error' THEN 'BuildFailed'
+                          WHEN 'cancelled' THEN 'BuildCancelled' WHEN 'canceled' THEN 'BuildCancelled' WHEN 'aborted' THEN 'BuildCancelled'
+                     END AS status_concept,
+                     CASE LOWER(test_type)
+                          WHEN 'unit' THEN 'ComponentTestLevel' WHEN 'component' THEN 'ComponentTestLevel'
+                          WHEN 'integration' THEN 'IntegrationTestLevel'
+                          WHEN 'system' THEN 'SystemTestLevel'
+                          WHEN 'acceptance' THEN 'AcceptanceTestLevel'
+                     END AS level_concept
+              FROM build_and_integration_testing) b
+        LEFT JOIN model_deployed md ON md.model_id = b.model_id AND md.deployment_id = b.deployment_id
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/testing/{experiment_id}/{deployment_id}/{model_id}/{test_id}" ;
                     rr:class aidoc:BuildAndIntegrationTesting , aidoc:AIActivity ] ;
@@ -751,7 +759,7 @@
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT run_id, data_id, data_source FROM data
-        WHERE data_acquisition_method IS NOT NULL AND data_source ~ '^https?://'
+        WHERE data_acquisition_method IS NOT NULL AND (data_source LIKE 'http://%' OR data_source LIKE 'https://%')
     """ ] ;
     rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/data-acquisition/{run_id}/{data_id}" ] ;
     rr:predicateObjectMap [ rr:predicate aidoc:hasSourceDataset ; rr:objectMap [ rr:column "data_source" ; rr:termType rr:IRI ] ] .
@@ -813,8 +821,8 @@
     a rr:TriplesMap ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT run_id, data_id, key, COALESCE(data_stage, 'profile') AS stage_key,
-               CASE WHEN value ~ '^[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?$' THEN value END AS value_num,
-               CASE WHEN value !~ '^[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?$' THEN value END AS value_text,
+               CASE WHEN value SIMILAR TO '[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?' THEN value END AS value_num,
+               CASE WHEN value NOT SIMILAR TO '[-+]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][-+]?[0-9]+)?' THEN value END AS value_text,
                to_timestamp(CASE WHEN timestamp > 10000000000 THEN timestamp / 1000.0 ELSE timestamp END) AS ts
         FROM data_metrics
     """ ] ;
@@ -1094,6 +1102,17 @@
 # =============================================================================
 # Fixes that need no module term
 # =============================================================================
+
+# REPLACE. data_signatures.signature is a PostgreSQL json column, which has no equality operator:
+# Ontop queries that need DISTINCT over aidoc:dataCharacteristic fail, and so does materialisation.
+# The column is cast to text.
+<#DataSignaturesTriplesMap>
+    a rr:TriplesMap ;
+    rr:logicalTable [ rr:sqlQuery """
+        SELECT run_id, data_id, CAST(signature AS text) AS signature FROM data_signatures
+    """ ] ;
+    rr:subjectMap [ rr:template "https://w3id.org/aidoc-ap/data/{run_id}/{data_id}" ] ;
+    rr:predicateObjectMap [ rr:predicate aidoc:dataCharacteristic ; rr:objectMap [ rr:column "signature" ; rr:datatype xsd:string ] ] .
 
 # REPLACE. Maps annotator_details with the core property aidoc:annotatorType.
 <#LabelingProcedureTriplesMap>

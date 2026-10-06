@@ -2,7 +2,7 @@
 PY ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 MODULE := ontology/aidoc-lc.ttl
 
-.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments overlay-check overlay-build adapter-check docs-pages set-version release all release-check fetch-core fetch-engine fetch-engine-excerpt
+.PHONY: setup check check-strict oci-core oci oci-gate cq gap test lint-text merged alignments overlay-check overlay-build adapter-check e2e docs-pages set-version release all release-check fetch-core fetch-engine fetch-engine-excerpt
 
 setup:
 	python3 -m venv .venv
@@ -55,6 +55,9 @@ overlay-build: overlay-check merged
 adapter-check: | reports
 	$(PY) scripts/adapt_engine_graph.py --input vendor/engine/ontop/input/knowledge_graph.rdf mappings/adapter/engine_output_sample.ttl
 	$(PY) scripts/run_cqs.py --data reports/engine_lifted.ttl --md reports/cq_engine.md
+
+e2e: overlay-check merged
+	$(PY) scripts/engine_e2e.py
 
 docs-pages: oci-core oci
 	$(PY) scripts/build_docs_pages.py --out reports/site-extra

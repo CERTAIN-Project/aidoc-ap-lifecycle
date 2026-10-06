@@ -1,0 +1,33 @@
+From ada06adc8484fdd3f8a1ad5cb7a68be1c9f3622f Mon Sep 17 00:00:00 2001
+From: Sebastian Neumaier <seb.neumaier@gmail.com>
+Date: Tue, 6 Oct 2026 08:51:26 +0200
+Subject: [PATCH 1/5] cast json signature to text so ontop can query
+ aidoc:dataCharacteristic
+
+---
+ ontop/input/aidoc-ap_r2rml.ttl | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/ontop/input/aidoc-ap_r2rml.ttl b/ontop/input/aidoc-ap_r2rml.ttl
+index 8bdb799..ebdfa62 100644
+--- a/ontop/input/aidoc-ap_r2rml.ttl
++++ b/ontop/input/aidoc-ap_r2rml.ttl
+@@ -372,7 +372,14 @@
+ <#DataSignaturesTriplesMap>
+     a rr:TriplesMap ;
+ 
+-    rr:logicalTable [ rr:tableName "data_signatures" ] ;
++    # signature is a json column; PostgreSQL json has no equality operator, so queries that
++    # need DISTINCT (and materialisation) fail unless the value is cast to text
++    rr:logicalTable [
++        rr:sqlQuery """
++            SELECT run_id, data_id, CAST(signature AS text) AS signature
++            FROM data_signatures
++        """
++    ] ;
+ 
+     rr:subjectMap [
+         rr:template "https://w3id.org/aidoc-ap/data/{run_id}/{data_id}" ;
+-- 
+2.54.0 (Apple Git-157)
+

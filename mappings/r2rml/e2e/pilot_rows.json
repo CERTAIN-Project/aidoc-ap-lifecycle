@@ -1,0 +1,112 @@
+{
+  "_comment": "Rows for an end-to-end test of the mappings (make e2e). Values follow the energy pilot of the Semantic MLOps Engine (test_docker/test_full_lifecycle_pilot.py, materialised pilot graph); identifiers, timestamps, drift and tokenizer values are illustrative. Tables not listed stay empty.",
+  "experiments": [
+    {"experiment_id": "2", "experiment_name": "energy-load-xgb", "experiment_stage": "Active", "lifecycle_stage": "active",
+     "description": "Hourly load forecasting for Germany", "creation_time": 1770588000, "last_update_time": 1770588178}
+  ],
+  "runs": [
+    {"run_id": "pilotrun01", "run_name": "energy-load-training", "source_type": "LOCAL", "source_name": "test_full_lifecycle_pilot.py",
+     "user_id": "data_science_team", "status": "FINISHED", "start_time": 1770588099, "end_time": 1770588178,
+     "source_version": "b41ea271be92", "experiment_id": "2"}
+  ],
+  "runs_code": [
+    {"run_id": "pilotrun01", "git_commit_hash": "b41ea271be92", "name": "test_full_lifecycle_pilot.py"}
+  ],
+  "model_architecture": [
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "model_version": 1, "architecture_name": "XGBRegressor",
+     "loss_function": "reg:squarederror", "framework": "xgboost", "input_shape": "(40320, 298)", "creation_time": 1770588178}
+  ],
+  "model_hyperparameters": [
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "n_estimators", "value": "40"},
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "max_depth", "value": "6"},
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "learning_rate", "value": "0.28326"}
+  ],
+  "model_metrics": [
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "mse", "value": "12966.089", "step": 0, "stage": "test", "is_NaN": false, "timestamp": 1770588178},
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "r2_score", "value": "0.99987", "step": 0, "stage": "test", "is_NaN": false, "timestamp": 1770588178},
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "trial_mse", "value": "12639.43", "step": 3, "stage": "train", "is_NaN": false, "timestamp": 1770588150}
+  ],
+  "id_mapping": [
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "data_id": "opsd", "deployment_id": "dep-energy-xgb-pilot"}
+  ],
+  "data": [
+    {"run_id": "pilotrun01", "data_id": "opsd", "data_stage": "raw", "data_type": "time series", "data_format": "csv",
+     "data_source": "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min", "data_version": "2020-10-06",
+     "data_location": "/data/opsd.csv", "data_acquisition_method": "Download of the published CSV file", "data_size": 50401,
+     "creation_time": 1770588030, "last_update_time": 1770588030},
+    {"run_id": "pilotrun01", "data_id": "opsd-train", "data_stage": "training", "data_type": "time series", "data_format": "csv",
+     "data_source": "local", "data_version": "v1", "data_location": "/data/train.csv", "data_size": 40320,
+     "creation_time": 1770588090, "last_update_time": 1770588090},
+    {"run_id": "pilotrun01", "data_id": "opsd-test", "data_stage": "testing", "data_type": "time series", "data_format": "csv",
+     "data_source": "local", "data_version": "v1", "data_location": "/data/test.csv", "data_size": 10080,
+     "creation_time": 1770588090, "last_update_time": 1770588090}
+  ],
+  "data_metrics": [
+    {"run_id": "pilotrun01", "data_id": "opsd", "key": "counts/n", "value": "50400", "timestamp": 1770588060, "data_stage": "cleaned", "is_NaN": false},
+    {"run_id": "pilotrun01", "data_id": "opsd", "key": "counts/null", "value": "0", "timestamp": 1770588060, "data_stage": "cleaned", "is_NaN": false}
+  ],
+  "data_techniques": [
+    {"run_id": "pilotrun01", "data_id": "opsd", "technique_name": ["clean_missing_values", "remove_outliers_iqr"], "data_technique_stage": "cleaning"},
+    {"run_id": "pilotrun01", "data_id": "opsd", "technique_name": ["augment_with_noise"], "data_technique_stage": "augmentation"}
+  ],
+  "data_hyperparameters": [
+    {"run_id": "pilotrun01", "data_id": "opsd", "technique_name": "remove_outliers_iqr", "technique_parameter_name": "iqr_factor", "technique_parameter_value": "1.5"},
+    {"run_id": "pilotrun01", "data_id": "opsd", "technique_name": "augment_with_noise", "technique_parameter_name": "noise_factor", "technique_parameter_value": "0.01"}
+  ],
+  "data_resources": [
+    {"run_id": "pilotrun01", "data_id": "opsd", "key": "cpu_count", "stage": "data", "value": "8", "timestamp": 1770588060}
+  ],
+  "resources": [
+    {"run_id": "pilotrun01", "model_id": "energy-load-xgb-v1", "key": "cpu_count", "value": "8", "step": 0, "stage": "train", "timestamp": 1770588178}
+  ],
+  "model_deployed": [
+    {"experiment_id": "2", "model_id": "energy-load-xgb-v1", "deployment_id": "dep-energy-xgb-pilot", "deployed_time": 1770588900,
+     "model_version": "1", "endpoint": "http://energy-xgb.example.org:8080/predict", "model_format": "mlflow_model", "size": "12MB",
+     "description": "Energy load forecaster", "user_id": "ml-team", "current_stage": "Production", "run_id": "pilotrun01",
+     "location": "s3://certain-models/energy-xgb-v1/", "status": "active", "model_cateory": "regression"}
+  ],
+  "model_packaging": [
+    {"packaging_id": "pkg-01", "experiment_id": "2", "deployment_id": "dep-energy-xgb-pilot", "model_id": "energy-load-xgb-v1",
+     "packaging_format": "mlflow_model", "dependencies": ["xgboost==2.1.4", "scikit-learn", "pandas", "numpy"],
+     "containerization_details": "{\"base_image\": \"python:3.11-slim\", \"cpu\": \"2\", \"memory\": \"4GB\", \"port\": 8080}"}
+  ],
+  "build_and_integration_testing": [
+    {"test_id": "test-01", "experiment_id": "2", "deployment_id": "dep-energy-xgb-pilot", "model_id": "energy-load-xgb-v1",
+     "build_status": "success", "build_logs": "Docker image built successfully. All 5 integration tests passed.",
+     "build_timestamp": 1770588800, "test_type": "integration",
+     "test_results": "{\"total\": 5, \"passed\": 5, \"failed\": 0, \"skipped\": 0, \"coverage_pct\": 92.0}"}
+  ],
+  "runtime_environment": [
+    {"deployment_id": "dep-energy-xgb-pilot", "experiment_id": "2", "model_id": "energy-load-xgb-v1", "server_name": "energy-xgb-serving", "performance": 2}
+  ],
+  "drift_metrics": [
+    {"experiment_id": "2", "deployment_id": "dep-energy-xgb-pilot", "model_id": "energy-load-xgb-v1", "value": 0, "timestamp": 1777593600}
+  ],
+  "monitor_logs": [
+    {"deployment_id": "dep-energy-xgb-pilot", "experiment_id": "2", "model_id": "energy-load-xgb-v1", "log_id": "mlog-01", "message": "Weekly drift check completed."}
+  ],
+  "decomissioning": [
+    {"decomissioning_id": "decom-01", "experiment_id": "2", "deployment_id": "dep-energy-xgb-pilot", "model_id": "energy-load-xgb-v1",
+     "decomissioning_date": 1789462800,
+     "decomissioning_actions": ["disable REST API endpoint", "archive model weights to cold storage", "remove Docker image from registry", "update model registry status to 'archived'", "notify stakeholders via email"],
+     "reason": "Replaced by energy-load-xgb-v2 which achieves 18% lower RMSE on the 2024 holdout set after retraining on updated OPSD data.",
+     "procedure_details": "Endpoint traffic was drained over 24h using a canary rollout."}
+  ],
+  "change_logs": [
+    {"log_id": "log-01", "run_id": "pilotrun01", "change_description": "Initial training run with XGBoost regressor and Optuna hyperparameter search.", "changed_by": "data_science_team", "change_timestamp": 1770588178}
+  ],
+  "tokenizer_config": [
+    {"tokenizer_id": "tok-01", "run_id": "pilotrun01", "tokenizer_type": "BertTokenizerFast", "model_name_or_path": "bert-base-uncased",
+     "vocab_size": 30522, "max_length": 128, "padding": "max_length", "truncation": true, "stride": 0,
+     "special_tokens": "{\"cls_token\": \"[CLS]\", \"sep_token\": \"[SEP]\"}", "creation_time": 1770588070}
+  ],
+  "tokenization_stats": [
+    {"stats_id": "st-01", "run_id": "pilotrun01", "split": "train", "total_sequences": 48210, "total_tokens": 2960094,
+     "avg_token_length": 61.4, "min_token_length": 3, "max_token_length": 128, "truncation_rate": 0.043, "padding_rate": 0.91,
+     "oov_rate": 0.012, "creation_time": 1770588080}
+  ],
+  "labeling_procedures": [
+    {"labeling_id": "lab-01", "experiment_id": "2", "procedure_description": "Load values are measured, no manual labelling.",
+     "quality_assurance_methods": "none", "annotator_details": "automatic", "annotation_tools": ["none"]}
+  ]
+}

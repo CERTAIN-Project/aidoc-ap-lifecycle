@@ -47,7 +47,7 @@ def metrics(g: Graph, kb: Graph) -> dict:
     violations = Counter()
     supers = {}
     for s, p, o in g:
-        if p == RDF.type or str(p).startswith(STANDARD_NS):
+        if p == RDF.type or str(p).startswith(STANDARD_NS + ("http://www.w3.org/2004/02/skos/core#",)):
             continue
         if (p, None, None) not in kb:
             undeclared[qname(p)] += 1
