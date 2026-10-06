@@ -4,6 +4,8 @@ Extension module of the [AIDOC-AP](https://w3id.org/aidoc-ap) application profil
 
 Status: version 0.2, draft. Release 1.0 is planned for December 2026.
 
+![The Lifecycle Extension imports the AIDOC-AP core unchanged; metadata of the Semantic MLOps Engine reaches its terms through an adapter over the engine's RDF output or through an R2RML overlay with its own Ontop endpoint.](documentation/figures/architecture.svg)
+
 | | |
 |---|---|
 | Namespace | `https://w3id.org/aidoc-ap/lifecycle#` (prefix `aidoc-lc`) |
@@ -14,6 +16,10 @@ Status: version 0.2, draft. Release 1.0 is planned for December 2026.
 | Citation | [CITATION.cff](CITATION.cff) |
 
 ## Example
+
+![The lifecycle of one model: each lifecycle activity of the core is linked to the model by an extension property and carries its own values.](documentation/figures/lifecycle-example.svg)
+
+The figure shows the model of the [energy pilot example](examples/energy_pilot_lifecycle.ttl). In Turtle, two of its stages read:
 
 ```turtle
 @prefix aidoc: <https://w3id.org/aidoc-ap#> .

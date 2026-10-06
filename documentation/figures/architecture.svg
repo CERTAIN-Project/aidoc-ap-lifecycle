@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1130 450" width="1130" height="450" role="img" aria-label="Architecture: the AIDOC-AP Lifecycle Extension imports the AIDOC-AP core 1.2 without changing it. Metadata of the Semantic MLOps Engine reaches the extension terms either through an adapter of SPARQL rules over the engine's RDF output or through an R2RML overlay run by a separate Ontop endpoint with read access to the engine database." font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>AIDOC-AP Lifecycle Extension: framework and engine integration</title>
+  <defs>
+    <marker id="acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0a7373"/>
+    </marker>
+    <marker id="grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5868"/>
+    </marker>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="1129" height="449" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+
+  <!-- ontology framework -->
+  <text x="30" y="34" font-size="12" font-weight="700" fill="#4a5868" letter-spacing="0.5">ONTOLOGY FRAMEWORK</text>
+
+  <rect x="30" y="50" width="400" height="56" rx="8" fill="#ffffff" stroke="#6b7785" stroke-dasharray="5 4"/>
+  <text x="230" y="74" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Legal and Ethical Extension</text>
+  <text x="230" y="93" text-anchor="middle" font-size="11" fill="#4a5868">planned, separate module (KPI 1.2)</text>
+
+  <rect x="30" y="160" width="400" height="76" rx="8" fill="#eef8f7" stroke="#0a7373" stroke-width="2"/>
+  <text x="230" y="186" text-anchor="middle" font-size="14" font-weight="700" fill="#0a7373">AIDOC-AP Lifecycle Extension</text>
+  <text x="230" y="206" text-anchor="middle" font-size="11" fill="#1d2733">aidoc-lc: · 25 terms, 4 concept schemes</text>
+  <text x="230" y="223" text-anchor="middle" font-size="11" fill="#4a5868">reuses PROV-O, ML Schema, DQV, DPV</text>
+
+  <rect x="30" y="300" width="230" height="64" rx="8" fill="#eaf2fb" stroke="#2f6fb0"/>
+  <text x="145" y="326" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">AIDOC-AP core 1.2</text>
+  <text x="145" y="346" text-anchor="middle" font-size="11" fill="#4a5868">aidoc: · published, not changed</text>
+
+  <rect x="280" y="300" width="150" height="64" rx="8" fill="#eaf2fb" stroke="#2f6fb0"/>
+  <text x="355" y="326" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Annex IV</text>
+  <text x="355" y="346" text-anchor="middle" font-size="11" fill="#4a5868">aiact: · 22 requirements</text>
+
+  <g stroke="#4a5868" stroke-width="1.4" fill="none" marker-end="url(#grey)">
+    <line x1="145" y1="236" x2="145" y2="298"/>
+    <line x1="230" y1="106" x2="230" y2="158" stroke-dasharray="5 4"/>
+  </g>
+  <g font-size="11" fill="#4a5868" stroke="#ffffff" stroke-width="4" paint-order="stroke">
+    <text x="153" y="272">owl:imports</text>
+    <text x="238" y="137">may import</text>
+  </g>
+
+  <text x="30" y="404" font-size="11" fill="#4a5868">Coverage of the 18 lifecycle stages (KPI 1.1):</text>
+  <text x="30" y="422" font-size="11" fill="#4a5868">core 0.574 · core and Lifecycle Extension 0.982</text>
+
+  <!-- engine -->
+  <rect x="500" y="22" width="610" height="118" rx="10" fill="#fafbfc" stroke="#6b7785" stroke-dasharray="5 4"/>
+  <text x="516" y="44" font-size="12" font-weight="700" fill="#4a5868" letter-spacing="0.5">SEMANTIC MLOPS ENGINE · NOT CHANGED</text>
+
+  <rect x="516" y="62" width="170" height="60" rx="8" fill="#f2f3f5" stroke="#3b4652"/>
+  <text x="601" y="87" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Metadata database</text>
+  <text x="601" y="106" text-anchor="middle" font-size="11" fill="#4a5868">PostgreSQL, MLflow runs</text>
+
+  <rect x="740" y="62" width="150" height="60" rx="8" fill="#f2f3f5" stroke="#3b4652"/>
+  <text x="815" y="87" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Ontop endpoint</text>
+  <text x="815" y="106" text-anchor="middle" font-size="11" fill="#4a5868">engine R2RML mapping</text>
+
+  <rect x="944" y="62" width="150" height="60" rx="8" fill="#f2f3f5" stroke="#3b4652"/>
+  <text x="1019" y="87" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">Engine RDF</text>
+  <text x="1019" y="106" text-anchor="middle" font-size="11" fill="#4a5868">AIDOC-AP core terms</text>
+
+  <g stroke="#4a5868" stroke-width="1.4" fill="none" marker-end="url(#grey)">
+    <line x1="686" y1="92" x2="738" y2="92"/>
+    <line x1="890" y1="92" x2="942" y2="92"/>
+  </g>
+
+  <!-- the two paths -->
+  <rect x="516" y="206" width="230" height="60" rx="8" fill="#eef8f7" stroke="#0a7373"/>
+  <text x="631" y="231" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">(b) R2RML overlay</text>
+  <text x="631" y="250" text-anchor="middle" font-size="11" fill="#4a5868">own Ontop endpoint, read-only access</text>
+
+  <rect x="904" y="206" width="190" height="60" rx="8" fill="#eef8f7" stroke="#0a7373"/>
+  <text x="999" y="231" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2733">(a) Adapter</text>
+  <text x="999" y="250" text-anchor="middle" font-size="11" fill="#4a5868">19 SPARQL rules</text>
+
+  <rect x="516" y="330" width="578" height="64" rx="8" fill="#eef8f7" stroke="#0a7373" stroke-width="2"/>
+  <text x="805" y="356" text-anchor="middle" font-size="13" font-weight="700" fill="#0a7373">Knowledge graph with core and Lifecycle Extension terms</text>
+  <text x="805" y="376" text-anchor="middle" font-size="11" fill="#4a5868">competency queries answered over the same rows: (b) 17 of 18, (a) 14 of 18</text>
+
+  <g stroke="#0a7373" stroke-width="1.6" fill="none" marker-end="url(#acc)">
+    <line x1="601" y1="122" x2="601" y2="204"/>
+    <line x1="1019" y1="122" x2="1019" y2="204"/>
+    <line x1="631" y1="266" x2="631" y2="328"/>
+    <line x1="999" y1="266" x2="999" y2="328"/>
+    <line x1="514" y1="362" x2="432" y2="230"/>
+  </g>
+  <g font-size="11" font-weight="600" fill="#0a7373" stroke="#ffffff" stroke-width="4" paint-order="stroke">
+    <text x="609" y="168">reads tables</text>
+    <text x="1027" y="168">lifts RDF output</text>
+    <text x="639" y="302">materialises or serves</text>
+    <text x="1007" y="302">adds lifted triples</text>
+    <text x="474" y="300" text-anchor="middle">uses</text>
+  </g>
+</svg>

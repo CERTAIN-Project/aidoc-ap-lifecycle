@@ -5,6 +5,16 @@
     It imports the core without changing any of its definitions, and it reuses PROV-O, ML Schema, DQV and DPV wherever a term exists.
 </span>
 
+<figure>
+  <img src="figures/lifecycle-example.svg" alt="The lifecycle of the model energy-load-xgb-v1: each lifecycle activity of the core is linked to the model by an extension property and carries its own values." style="max-width:100%;height:auto"/>
+  <figcaption>The lifecycle of one model of the CERTAIN energy pilot. Each lifecycle activity of the AIDOC-AP core (blue) is linked to the model by a property of the extension (green arrows) and carries its own values, such as hyperparameter settings, the packaging format, the registry stage, the serving endpoint, drift measurements or the decommissioning reason. The <a href="examples.html">worked examples</a> show the data and the queries behind the figure.</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/architecture.svg" alt="The Lifecycle Extension imports the AIDOC-AP core unchanged; metadata of the Semantic MLOps Engine reaches its terms through an adapter over the engine's RDF output or through an R2RML overlay with its own Ontop endpoint." style="max-width:100%;height:auto"/>
+  <figcaption>The extension in the ontology framework and its use with the Semantic MLOps Engine: (a) an adapter of SPARQL rules lifts the engine's RDF output, (b) an R2RML overlay is run by a separate Ontop endpoint with read access to the engine database.</figcaption>
+</figure>
+
 <h3 id="by-stage" class="list">Terms by lifecycle stage</h3>
 <span>
 <table>

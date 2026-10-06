@@ -80,16 +80,27 @@ jobs:
         run: |
           [ -f site/index-en.html ] && cp site/index-en.html site/index.html
           cp -R site-extra/. site/
+          mkdir -p site/figures && cp documentation/figures/*.svg site/figures/
           cp ontology/aidoc-lc.ttl site/aidoc-lc.ttl
           # release snapshots (written by `make release`), served under the version IRIs
           if [ -d versions ]; then cp -R versions/. site/; fi
 
+      # Downloadable preview of the site, also while GitHub Pages is not enabled
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentation-site
+          path: site
+
       - uses: actions/upload-pages-artifact@v3
+        if: vars.PAGES_ENABLED == 'true'
         with:
           path: site
 
+  # Deploys only when the repository variable PAGES_ENABLED is 'true' (Settings, Secrets and
+  # variables, Actions, Variables) and GitHub Pages uses "GitHub Actions" as source.
   deploy:
     needs: build
+    if: vars.PAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

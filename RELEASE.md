@@ -17,7 +17,7 @@ The repository prepares releases; publishing is done by the maintainer. The modu
 ## Publishing (maintainer)
 
 1. Repository: make `CERTAIN-Project/aidoc-ap-lifecycle` public. GitHub Pages for private repositories depends on the organisation's plan, so the documentation goes online with the public repository.
-2. GitHub Pages: Settings, Pages, source "GitHub Actions". The workflow `Build & deploy documentation (Widoco)` then publishes the term reference, the worked examples, the coverage page and the version snapshots.
+2. GitHub Pages: Settings, Pages, source "GitHub Actions", and the repository variable `PAGES_ENABLED` set to `true` (Settings, Secrets and variables, Actions). The workflow `Build & deploy documentation (Widoco)` then publishes the term reference, the worked examples, the coverage page, the figures and the version snapshots. Without the variable it only builds the site and offers it as the downloadable artifact `documentation-site`.
 3. OOPS!: run the workflow `OOPS! pitfall scan` once by hand; it sends the ontology to EasyRDF and OOPS!.
 4. Zenodo: enable the GitHub integration for the repository and create the GitHub release `v1.0`; Zenodo archives it with the metadata of `.zenodo.json` and assigns a DOI. Add the DOI to `CITATION.cff` and `README.md` in the next commit.
-5. w3id: open a pull request in `perma-id/w3id.org` with the rules in `release/w3id/` and check the redirects listed there after the merge.
+5. w3id: once the documentation site is online, open a pull request in `perma-id/w3id.org` that replaces `ids/aidoc-ap/.htaccess` with `release/w3id/aidoc-ap.htaccess`, and check the redirects listed in `release/w3id/README.md` after the merge.
