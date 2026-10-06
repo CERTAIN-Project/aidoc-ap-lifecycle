@@ -2,7 +2,8 @@ cff-version: 1.2.0
 message: "If you use the AIDOC-AP Lifecycle Extension, please cite it as below."
 type: dataset
 title: "AIDOC-AP Lifecycle Extension"
-version: "0.2"
+version: "1.0"
+date-released: 2026-10-06
 abstract: >-
   Extension module of the AIDOC-AP application profile. It adds the terms needed to describe the
   stages of the AI system lifecycle that the AIDOC-AP core, which follows the technical
