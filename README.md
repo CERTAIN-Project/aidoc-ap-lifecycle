@@ -2,7 +2,7 @@
 
 Extension module of the [AIDOC-AP](https://w3id.org/aidoc-ap) application profile, developed in the CERTAIN project (Horizon Europe, grant agreement 101189650). The AIDOC-AP core describes the technical documentation of AI systems required by Annex IV of the EU AI Act and has an activity class for each stage of the AI system lifecycle. The extension connects these activities to the artefacts they use and produce and gives each stage the properties needed to describe it: which training produced which model with which hyperparameter settings, how a model was packaged, versioned, tested, deployed, monitored, re-evaluated and decommissioned, and why. It imports the core without changing any of its definitions and reuses PROV-O, ML Schema, DQV and DPV.
 
-Status: version 0.2, draft. Release 1.0 is planned for December 2026.
+Status: version 0.2, draft.
 
 ![The Lifecycle Extension imports the AIDOC-AP core unchanged; metadata of the Semantic MLOps Engine reaches its terms through an adapter over the engine's RDF output or through an R2RML overlay with its own Ontop endpoint.](documentation/figures/architecture.svg)
 
@@ -11,7 +11,7 @@ Status: version 0.2, draft. Release 1.0 is planned for December 2026.
 | Namespace | `https://w3id.org/aidoc-ap/lifecycle#` (prefix `aidoc-lc`) |
 | Ontology | [ontology/aidoc-lc.ttl](ontology/aidoc-lc.ttl): 2 classes, 19 object properties, 4 datatype properties, 4 seed concept schemes |
 | Imports | AIDOC-AP core 1.2 |
-| Documentation | `https://w3id.org/aidoc-ap/lifecycle` (once published): term reference and [worked examples](examples/README.md) |
+| Documentation | `https://w3id.org/aidoc-ap/lifecycle`: term reference and [worked examples](examples/README.md) |
 | Licence | CC BY 4.0 for the ontology and documentation ([LICENSE-CC-BY.txt](LICENSE-CC-BY.txt)), Apache-2.0 for code ([LICENSE](LICENSE)) |
 | Citation | [CITATION.cff](CITATION.cff) |
 
