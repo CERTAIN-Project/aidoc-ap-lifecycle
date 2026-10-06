@@ -4,6 +4,14 @@ type: dataset
 title: "AIDOC-AP Lifecycle Extension"
 version: "1.0"
 date-released: 2026-10-06
+doi: "10.5281/zenodo.23185787"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23185787"
+    description: "Version 1.0"
+  - type: doi
+    value: "10.5281/zenodo.23185786"
+    description: "All versions (concept DOI, resolves to the latest version)"
 abstract: >-
   Extension module of the AIDOC-AP application profile. It adds the terms needed to describe the
   stages of the AI system lifecycle that the AIDOC-AP core, which follows the technical
@@ -33,7 +41,7 @@ keywords:
   - EU AI Act
   - AIDOC-AP
 references:
-  - type: dataset
+  - type: data
     title: "AIDOC-AP: AI Documentation Application Profile"
     version: "1.2"
     doi: "10.5281/zenodo.17787786"

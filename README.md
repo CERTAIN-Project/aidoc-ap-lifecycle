@@ -4,6 +4,8 @@ Extension module of the [AIDOC-AP](https://w3id.org/aidoc-ap) application profil
 
 Status: version 1.0, released on 6 October 2026.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23185786.svg)](https://doi.org/10.5281/zenodo.23185786)
+
 ![The Lifecycle Extension imports the AIDOC-AP core unchanged; metadata of the Semantic MLOps Engine reaches its terms through an adapter over the engine's RDF output or through an R2RML overlay with its own Ontop endpoint.](documentation/figures/architecture.svg)
 
 | | |
@@ -13,6 +15,7 @@ Status: version 1.0, released on 6 October 2026.
 | Imports | AIDOC-AP core 1.2 |
 | Documentation | [w3id.org/aidoc-ap/lifecycle](https://certain-project.github.io/aidoc-ap-lifecycle/): term reference, [worked examples](https://certain-project.github.io/aidoc-ap-lifecycle/examples.html), [coverage](https://certain-project.github.io/aidoc-ap-lifecycle/coverage.html) |
 | Licence | CC BY 4.0 for the ontology and documentation ([LICENSE-CC-BY.txt](LICENSE-CC-BY.txt)), Apache-2.0 for code ([LICENSE](LICENSE)) |
+| Archived releases | [10.5281/zenodo.23185786](https://doi.org/10.5281/zenodo.23185786) (all versions); version 1.0: [10.5281/zenodo.23185787](https://doi.org/10.5281/zenodo.23185787) |
 | Citation | [CITATION.cff](CITATION.cff) |
 
 ## Example
